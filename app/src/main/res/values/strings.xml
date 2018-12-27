@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Mario</string>
+
+    <string name="font">fonts/8bits.ttf</string>
+</resources>
