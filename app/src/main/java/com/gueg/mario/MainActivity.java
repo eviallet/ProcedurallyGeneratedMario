@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import com.twicecircled.spritebatcher.Drawer;
@@ -342,12 +343,22 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GLSurfaceView surface = new GLSurfaceView(this);
         setContentView(surface);
         initFullScreen();
+
+        int map [][] = Generator.generateMap(130, 40, 0);
+        StringBuilder row = new StringBuilder();
+        for(int h=0;h<40;h++) {
+            for (int w = 0; w < 130; w++)
+                row.append(map[h][w]).append(" ");
+            row.append("\n");
+        }
+        Log.d(":-:",row.toString());
 
         surface.setOnTouchListener(OnTouchListener);
 
