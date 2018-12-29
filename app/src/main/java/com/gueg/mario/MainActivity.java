@@ -6,345 +6,40 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.twicecircled.spritebatcher.Drawer;
 import com.twicecircled.spritebatcher.SpriteBatcher;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-
+// TODO remove all that static stuff
 @SuppressWarnings({"ConstantConditions", "FieldCanBeLocal"})
 public class MainActivity extends AppCompatActivity implements Drawer {
 
 
-    private static final int MAX_FPS = 45;
-
-    private long animTicker = System.currentTimeMillis();
-    private static final long FRAME_DURATION = 50;
-    private long animTicker2 = System.currentTimeMillis();
-    private static final long FRAME_DURATION_2 = 200;
+    private static final int MAX_FPS = 60;
 
     private final int MAP_WIDTH = 130;
     private final int MAP_HEIGHT = 10;
 
-    private double SCROLL_LEFT_POS;
-    private double SCROLL_RIGHT_POS;
 
     private Spawners _spawner;
 
-    private Rect r1;
-    private Rect r2;
-    private Rect r3;
+    static Rect screenRect;
 
+    static ArrayList<GameObject> objects = new ArrayList<>();
+    static ArrayList<Enemy> enemies = new ArrayList<>();
+    static Mario mario;
+    static Backgrounds bkg;
 
-    boolean moving = false;
-    boolean running =false;
-    float pos;
-    boolean direction = true;
-    boolean jumping = false;
-    private static final float JUMP = -30.0f;
+    FPSCounter fps = new FPSCounter();
 
-    private List<GameObject> objects = new ArrayList<>();
-    private List<Enemy> enemies = new ArrayList<>();
-    private UnanimatedObject background1;
-    private UnanimatedObject background2;
-    private UnanimatedObject background3;
-    private Mario mario;
-
-    private int primaryPointerId;
-    private int runningPointerId;
-    private int jumpingPointerId;
-
-
-
-    // TOUCH EVENTS
-    private View.OnTouchListener OnTouchListener = new View.OnTouchListener() {
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if(event.getPointerCount()==1) {
-                primaryPointerId = event.getPointerId(event.getActionIndex());
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_UP:
-                        moving = false;
-                        running = false;
-                        if (jumping && mario.getVelocity() < JUMP / 2) {
-                            mario.setVelocity(JUMP / 2);
-                        }
-                        break;
-                    case MotionEvent.ACTION_DOWN:
-                        if (event.getY() > getScreenRect().centerY()) {
-                            moving = true;
-                            pos = event.getX();
-                        } else {
-                            if (!mario.isFalling() && !jumping) {
-                                jumping = true;
-                                mario.setVelocity(JUMP);
-                            }
-                        }
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        if (event.getY() < getScreenRect().centerY()) {
-                            if (!mario.isFalling() && !jumping) {
-                                jumping = true;
-                                mario.setVelocity(JUMP);
-                            }
-                        } else {
-                            if (jumping && mario.getVelocity() < JUMP / 2) {
-                                mario.setVelocity(JUMP / 2);
-                            }
-                        }
-                        break;
-                }
-            }
-            else {
-                MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
-                event.getPointerCoords(event.getActionIndex(),coords);
-                switch (event.getActionMasked()) {
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        if (coords.getAxisValue(1) > getScreenRect().centerY()) {
-                            if(!moving) {
-                                moving = true;
-                                primaryPointerId = event.getPointerId(event.getActionIndex());
-                            } else {
-                                running = true;
-                                runningPointerId = event.getPointerId(event.getActionIndex());
-                            }
-                        } else {
-                            if (!mario.isFalling() && !jumping) {
-                                jumping = true;
-                                jumpingPointerId = event.getPointerId(event.getActionIndex());
-                                mario.setVelocity(JUMP);
-                            }
-                        }
-                        break;
-                    case MotionEvent.ACTION_POINTER_UP:
-                        if(event.getPointerId(event.getActionIndex())==primaryPointerId)
-                            moving = false;
-                        else if (jumping && mario.getVelocity() < JUMP / 2 && jumpingPointerId==event.getPointerId(event.getActionIndex()))
-                            mario.setVelocity(JUMP / 2);
-                        else if(running && runningPointerId == event.getPointerId(event.getActionIndex()))
-                            running = false;
-                        break;
-                }
-            }
-
-            return true;
-        }
-    };
-
-
-
-    // MAIN LOOP
-    private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-
-            // TICKER
-            if (System.currentTimeMillis() - animTicker >= FRAME_DURATION) {
-                animTicker = System.currentTimeMillis();
-                mario.nextFrame();
-                for(GameObject obj : objects)
-                    if(obj instanceof AnimatedObject)
-                        ((AnimatedObject) obj).nextFrame();
-            }
-            if (System.currentTimeMillis() - animTicker2 >= FRAME_DURATION_2) {
-                animTicker2 = System.currentTimeMillis();
-                for(Enemy en : enemies)
-                    en.nextFrame();
-            }
-
-            // GRAVITY
-            for(GameObject obj : objects) {
-                if (obj.getGravityState()) {
-                    obj.applyGravity();
-                    for (GameObject obj2 : objects) {
-                        if (obj.isOnTopOf(obj2)) {
-                            obj.setPos(obj.getPos().left, obj2.getPos().top - obj.getSize()[0]);
-                            obj.setVelocity(0);
-                        }
-                    }
-                }
-            }
-
-
-
-
-            for(Enemy en : enemies) {
-                if (en.getGravityState()) {
-                    en.applyGravity();
-
-                    boolean applyGravity = true;
-                    GameObject left = null;
-                    GameObject right = null;
-                    GameObject bottom = null;
-                    boolean canMove = true;
-
-
-                    HashMap<Integer,GameObject> map = getObjectsAround(en);
-                    if(map!=null) {
-                        if((left = map.get(AT_LEFT))!=null || (right = map.get(AT_RIGHT))!=null)
-                            canMove = false;
-                        if((bottom = map.get(AT_BOTTOM))!=null)
-                            applyGravity = false;
-                    }
-
-
-                    if(applyGravity) {
-                        en.moveY();
-                    } else {
-                        en.setPos(en.getPos().left,bottom.getPos().top-en.getSize()[1]);
-                        en.setVelocity(0);
-                    }
-
-                    if(canMove)
-                        en.moveX();
-                    else {
-                        if(left!=null) {
-                            en.setPos(left.getPos().right, en.getPos().top);
-                        }
-                        if(right!=null) {
-                            en.setPos(right.getPos().left-en.getSize()[0], en.getPos().top);
-                        }
-
-                        en.changeDirection();
-                        en.nextFrame();
-                    }
-
-                } else  // billball
-                    en.moveX(); // TODO flying koopas
-            }
-
-
-
-            // MARIO
-
-            if(moving)
-                moving(pos);
-            else
-                mario.slowDown();
-
-            if(jumping&&mario.getVelocity()>0)
-                jumping = false;
-
-            mario.applyGravity();
-
-            boolean applyGravity = true;
-            GameObject top;
-            GameObject left = null;
-            GameObject right = null;
-            GameObject bottom = null;
-            boolean canMove = true;
-
-
-            HashMap<Integer,GameObject> map = getObjectsAround(mario);
-            if(map!=null) {
-                if((top = map.get(AT_TOP))!=null) {
-                    if (top instanceof Enemy)
-                        mario.getDirection(); // TODO life
-                    else if (mario.getVelocity() < 0) {
-                        mario.setVelocity(0); // TODO top.triggerAction();
-                        jumping = false;
-                    }
-                }
-                if((left = map.get(AT_LEFT))!=null || (right = map.get(AT_RIGHT))!=null)
-                    if( (left != null && left instanceof Enemy) || (right != null && right instanceof Enemy))
-                        mario.getDirection(); // TODO life
-                    else
-                        canMove = false;
-                if((bottom = map.get(AT_BOTTOM))!=null) {
-                    if(bottom instanceof Enemy && mario.getVelocity() >=0) {
-                        jumping = true;
-                        mario.setVelocity(-12); // TODO kill ennemy
-                    }
-                    else
-                        applyGravity = false;
-                }
-
-            }
-
-
-            if(applyGravity) {
-                mario.moveY();
-            } else {
-                mario.setPos(mario.getPos().left,bottom.getPos().top-mario.getSize()[1]);
-                mario.setVelocity(0);
-            }
-
-            if(canMove)
-                mario.moveX();
-            else {
-                if(left!=null) {
-                    mario.setPos(left.getPos().right, mario.getPos().top);
-                    mario.slowDownQuickly();
-                }
-                if(right!=null) {
-                    mario.setPos(right.getPos().left - mario.getSize()[0], mario.getPos().top);
-                    mario.slowDownQuickly();
-                }
-            }
-
-            // DEBUG
-            if(mario.getPos().top > getScreenRect().bottom)
-                mario.setPos(mario.getPos().left, getScreenRect().height()-GameObject.BASE_HEIGHT*9);
-
-
-
-
-
-
-            // SCROLLING
-            if(mario.getPos().right > SCROLL_RIGHT_POS) {
-                mario.setPos(((int) SCROLL_RIGHT_POS - GameObject.BASE_WIDTH), mario.getPos().top);
-                r1.offset(-mario.getSpeed()/6,0);
-                r2.offset(-mario.getSpeed()/6,0);
-                r3.offset(-mario.getSpeed()/6,0);
-                for (GameObject obj : objects)
-                    obj.setOffset(mario.getDirection(), mario.getSpeed());
-                for(Enemy en : enemies)
-                    en.setOffset(mario.getDirection(), mario.getSpeed());
-            }
-            else if(mario.getPos().left < SCROLL_LEFT_POS -1) {
-                mario.setPos((int) SCROLL_LEFT_POS, mario.getPos().top);
-                r1.offset(-mario.getSpeed()/6,0);
-                r2.offset(-mario.getSpeed()/6,0);
-                r3.offset(-mario.getSpeed()/6,0);
-                for (GameObject obj : objects)
-                    obj.setOffset(mario.getDirection(), -mario.getSpeed());
-                for(Enemy en : enemies)
-                    en.setOffset(mario.getDirection(), -mario.getSpeed());
-
-            }
-
-            if(r1.right<=getScreenRect().left) {
-                r1 = getScreenRect();
-                r2 = getScreenRect();
-                r2.offset(getScreenRect().width(),0);
-                r3 = getScreenRect();
-                r3.offset(-getScreenRect().width(),0);
-            } else if(r1.left>=getScreenRect().right) {
-                r1 = getScreenRect();
-                r2 = getScreenRect();
-                r2.offset(getScreenRect().width(),0);
-                r3 = getScreenRect();
-                r3.offset(-getScreenRect().width(),0);
-            }
-        }
-
-    };
-
-
-
+    Updater updater;
 
 
 
@@ -357,30 +52,12 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         setContentView(surface);
         initFullScreen();
 
-        surface.setOnTouchListener(OnTouchListener);
+        loadScreenRect();
 
-        SCROLL_LEFT_POS = getScreenRect().width()*0.2;
-        SCROLL_RIGHT_POS = getScreenRect().width()*0.4;
+
 
         Resources res = getResources();
         _spawner = new Spawners(res);
-
-        // BACKGROUND POS
-
-        r1 = getScreenRect();
-        r2 = getScreenRect();
-        r2.offset(getScreenRect().width(),0);
-        r3 = getScreenRect();
-        r3.offset(-getScreenRect().width(),0);
-
-
-        background1 = new UnanimatedObject(res,R.drawable.bkg_0,false);
-        background1.setPos(r1.left,r1.top);
-        background2 = new UnanimatedObject(res,R.drawable.bkg_0,false);
-        background2.setPos(r2.left,r2.top);
-        background3 = new UnanimatedObject(res,R.drawable.bkg_0,false);
-        background3.setPos(r3.left,r3.top);
-
 
         loadMap();
 
@@ -403,8 +80,13 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 R.drawable.running_3,
                 // ^ right
         });
-        mario.setPos((int) SCROLL_LEFT_POS + GameObject.BASE_WIDTH , getScreenRect().height()-GameObject.BASE_HEIGHT*2);
+        mario.setPos(GameObject.BASE_WIDTH * 3 , screenRect.height()-GameObject.BASE_HEIGHT*2);
 
+        bkg = new Backgrounds(res);
+
+        updater = new Updater();
+
+        surface.setOnTouchListener(new InputProcessor());
 
         // SPRITE BATCHER
 
@@ -440,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         sb.setMaxFPS(MAX_FPS);
         surface.setRenderer(sb);
 
-        handler.post(runnable);
+        updater.update();
     }
 
 
@@ -463,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         }
     }
 
-    FPSCounter fps = new FPSCounter();
+
 
     @Override
     public void onDrawFrame(GL10 gl, SpriteBatcher sb) {
@@ -474,30 +156,20 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         sb.draw(mario);
 
         // TODO if sort de l'ecran
+        /*
         for(GameObject obj : objects)
             sb.draw(obj);
         for(Enemy en : enemies)
-            sb.draw(en);
+            sb.draw(en);*/
+        for(int i=0; i<objects.size()/10; i++)
+            sb.draw(objects.get(i));
 
-        sb.draw(background1, r1);
-        sb.draw(background2, r2);
-        sb.draw(background3, r3);
+        sb.draw(bkg.background1, bkg.r1);
+        sb.draw(bkg.background2, bkg.r2);
+        sb.draw(bkg.background3, bkg.r3);
 
-
-        handler.post(runnable);
+        updater.update();
     }
-
-
-
-    private void moving(float x) {
-        direction=(x>=getScreenRect().width()/2);
-
-        if (direction)
-            mario.moveRight(running);
-        else
-            mario.moveLeft(running);
-    }
-
 
 
 
@@ -520,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         }
     }
 
-    private Rect getScreenRect() {
+    private void loadScreenRect() {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
@@ -528,42 +200,9 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         if (resourceId > 0) {
             navBarSize = getResources().getDimensionPixelSize(resourceId) + 10;
         }
-        return new Rect(0,0,metrics.widthPixels+navBarSize,metrics.heightPixels);
+        screenRect = new Rect(0,0,metrics.widthPixels+navBarSize,metrics.heightPixels);
     }
 
-
-    private static final int AT_TOP = 0;
-    private static final int AT_LEFT = 1;
-    private static final int AT_RIGHT = 2;
-    private static final int AT_BOTTOM = 3;
-
-    @SuppressLint("UseSparseArrays")
-    private HashMap<Integer,GameObject> getObjectsAround(GameObject o) {
-         HashMap<Integer,GameObject> map = new HashMap<>();
-        for(GameObject obj : objects) {
-            if (o.isOnTopOf(obj))
-                map.put(AT_BOTTOM, obj);
-            else if (o.isAtLeftOf(obj))
-                map.put(AT_RIGHT, obj);
-            else if (o.isAtRightOf(obj))
-                map.put(AT_LEFT, obj);
-            else if (o.isBelow(obj))
-                map.put(AT_TOP, obj);
-        }
-
-        for(Enemy en : enemies) {
-            if (o.isOnTopOf(en))
-                map.put(AT_BOTTOM, en);
-            else if (o.isAtLeftOf(en))
-                map.put(AT_RIGHT, en);
-            else if (o.isAtRightOf(en))
-                map.put(AT_LEFT, en);
-            else if (o.isBelow(en))
-                map.put(AT_TOP, en);
-        }
-
-        return map;
-    }
 
 
 

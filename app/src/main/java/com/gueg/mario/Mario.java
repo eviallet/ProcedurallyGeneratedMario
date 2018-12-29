@@ -1,6 +1,7 @@
 package com.gueg.mario;
 
 import android.content.res.Resources;
+import android.graphics.Rect;
 
 public class Mario extends AnimatedObject {
 
@@ -8,6 +9,10 @@ public class Mario extends AnimatedObject {
     public static final int MAX_SPEED_X_RUNNING = 20;
 
     private boolean _direction = true;
+    public boolean moving = false;
+    public boolean running =false;
+    public boolean jumping =false;
+    public float downPos = 0;
 
     public Mario(Resources res, int[] resId) {
         super(res,resId,true);
@@ -27,7 +32,17 @@ public class Mario extends AnimatedObject {
             setFrame(0,_direction); // idle
     }
 
-    public void moveLeft(boolean running) {
+
+    public void move(Rect screenRect) {
+        _direction=(downPos>=screenRect.width()/2);
+
+        if (_direction)
+            moveRight(running);
+        else
+            moveLeft(running);
+    }
+
+    private void moveLeft(boolean running) {
         _direction = false;
         if(_velocityX>0)
             _velocityX = 0;
@@ -41,7 +56,7 @@ public class Mario extends AnimatedObject {
         }
     }
 
-    public void moveRight(boolean running) {
+    private void moveRight(boolean running) {
         _direction = true;
         if(_velocityX<0)
             _velocityX = 0;

@@ -1,9 +1,13 @@
 package com.gueg.mario;
 
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @SuppressWarnings("ALL")
 public abstract class GameObject implements Cloneable {
@@ -137,6 +141,11 @@ public abstract class GameObject implements Cloneable {
     }
 
 
+    public boolean isOnScreen(Rect visibleScreen) {
+        return _pos.intersect(visibleScreen);
+    }
+
+
     private static int MAX_SHIFT_X = BASE_WIDTH/4;
     public boolean isOnTopOf(GameObject obj) {
         return obj!=null && obj.isSolid() &&
@@ -168,6 +177,38 @@ public abstract class GameObject implements Cloneable {
     }
 
 
+    public static final int AT_TOP = 0;
+    public static final int AT_LEFT = 1;
+    public static final int AT_RIGHT = 2;
+    public static final int AT_BOTTOM = 3;
+
+    @SuppressLint("UseSparseArrays")
+    public static HashMap<Integer,GameObject> getObjectsAround(ArrayList<GameObject> objects, ArrayList<Enemy> enemies, GameObject o) {
+        HashMap<Integer,GameObject> map = new HashMap<>();
+        for(GameObject obj : objects) {
+            if (o.isOnTopOf(obj))
+                map.put(AT_BOTTOM, obj);
+            else if (o.isAtLeftOf(obj))
+                map.put(AT_RIGHT, obj);
+            else if (o.isAtRightOf(obj))
+                map.put(AT_LEFT, obj);
+            else if (o.isBelow(obj))
+                map.put(AT_TOP, obj);
+        }
+
+        for(Enemy en : enemies) {
+            if (o.isOnTopOf(en))
+                map.put(AT_BOTTOM, en);
+            else if (o.isAtLeftOf(en))
+                map.put(AT_RIGHT, en);
+            else if (o.isAtRightOf(en))
+                map.put(AT_LEFT, en);
+            else if (o.isBelow(en))
+                map.put(AT_TOP, en);
+        }
+
+        return map;
+    }
 
 
 
