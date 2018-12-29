@@ -5,22 +5,24 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.opengl.GLSurfaceView;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.twicecircled.spritebatcher.Drawer;
 import com.twicecircled.spritebatcher.SpriteBatcher;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.microedition.khronos.opengles.GL10;
 
 
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions", "FieldCanBeLocal"})
 public class MainActivity extends AppCompatActivity implements Drawer {
 
 
@@ -63,8 +65,10 @@ public class MainActivity extends AppCompatActivity implements Drawer {
     private int jumpingPointerId;
 
 
+
     // TOUCH EVENTS
     private View.OnTouchListener OnTouchListener = new View.OnTouchListener() {
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if(event.getPointerCount()==1) {
@@ -335,12 +339,9 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 r3 = getScreenRect();
                 r3.offset(-getScreenRect().width(),0);
             }
-
         }
 
     };
-
-
 
 
 
@@ -451,8 +452,12 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 int t = map[h][w];
                 if (t != Tiles.NONE.getVal()) {
                     GameObject spawner = _spawner.at(t);
-                    if(spawner != null)
-                        objects.add(spawner.spawnAtPos(GameObject.BASE_WIDTH * w, GameObject.BASE_HEIGHT * h));
+                    if(spawner != null) {
+                        if (spawner instanceof Enemy)
+                            enemies.add((Enemy)spawner.spawnAtPos(GameObject.BASE_WIDTH * w, GameObject.BASE_HEIGHT * h));
+                        else
+                            objects.add(spawner.spawnAtPos(GameObject.BASE_WIDTH * w, GameObject.BASE_HEIGHT * h));
+                    }
                 }
             }
         }
@@ -462,7 +467,6 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
     @Override
     public void onDrawFrame(GL10 gl, SpriteBatcher sb) {
-
         // CONSTANTS
         sb.drawText(R.string.font,"FPS : "+fps.logFrame(),300,40,1f);
 
