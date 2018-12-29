@@ -5,7 +5,7 @@ import android.util.Log;
 
 public class AnimatedObject extends GameObject {
 
-    private int[] _resId;
+    protected int[] _resId;
     private int _index = 0;
 
     protected String FRAME_WALK = "w";
@@ -13,7 +13,7 @@ public class AnimatedObject extends GameObject {
 
 
     public AnimatedObject(Resources res, int[] resId, boolean gravity) {
-        super(res,resId[0], gravity);
+        super(res, resId[0], gravity);
         _resId = resId;
     }
 
@@ -80,6 +80,11 @@ public class AnimatedObject extends GameObject {
         }
         else
             Log.w("AnimatedObject","setFrame : bad index. ("+index+"/"+_index);
+    }
+
+    @Override
+    public AnimatedObject clone() {
+        return new AnimatedObject(_res, _resId, _gravity);
     }
 
 

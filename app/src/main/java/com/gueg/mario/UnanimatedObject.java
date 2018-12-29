@@ -9,9 +9,8 @@ public class UnanimatedObject extends GameObject {
         setSolid(solid);
     }
 
-    public UnanimatedObject(Resources res, int resId, boolean solid, int x, int y) {
-        super(res,resId,false);
-        setSolid(solid);
-        setPos(x,y);
+    @Override
+    public UnanimatedObject clone() {
+        return new UnanimatedObject(_res, _resId, _solid);
     }
 }

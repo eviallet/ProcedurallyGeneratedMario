@@ -5,7 +5,8 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
-public abstract class GameObject {
+@SuppressWarnings("ALL")
+public abstract class GameObject implements Cloneable {
 
     public static final int BASE_WIDTH = 100;
     public static final int BASE_HEIGHT = 100;
@@ -60,7 +61,7 @@ public abstract class GameObject {
         if(d!=null)
             return new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight());
         else
-            return new Rect(0,0,0,0);
+            return new Rect(0, 0, 0, 0);
     }
 
     public int getResId() {
@@ -68,11 +69,20 @@ public abstract class GameObject {
     }
 
     public void setPos(int x, int y) {
-        _pos.set(x,y,x+_size[0],y+_size[1]);
+        _pos.set(x, y, x + _size[0], y + _size[1]);
     }
     public Rect getPos() {
         return _pos;
     }
+
+    public GameObject spawnAtPos(int x, int y) {
+        GameObject clone = clone();
+        clone.setPos(x, y);
+        return clone;
+    }
+
+    @Override
+    public abstract GameObject clone();
 
     public void setOffset(boolean direction, int speed) {
         if(direction)

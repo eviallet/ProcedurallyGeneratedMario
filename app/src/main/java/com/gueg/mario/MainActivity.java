@@ -31,8 +31,13 @@ public class MainActivity extends AppCompatActivity implements Drawer {
     private long animTicker2 = System.currentTimeMillis();
     private static final long FRAME_DURATION_2 = 200;
 
+    private final int MAP_WIDTH = 130;
+    private final int MAP_HEIGHT = 10;
+
     private double SCROLL_LEFT_POS;
     private double SCROLL_RIGHT_POS;
+
+    private Spawners _spawner;
 
     private Rect r1;
     private Rect r2;
@@ -46,8 +51,8 @@ public class MainActivity extends AppCompatActivity implements Drawer {
     boolean jumping = false;
     private static final float JUMP = -30.0f;
 
-    private List<GameObject> objects;
-    private List<Ennemy> ennemies;
+    private List<GameObject> objects = new ArrayList<>();
+    private List<Enemy> enemies = new ArrayList<>();
     private UnanimatedObject background1;
     private UnanimatedObject background2;
     private UnanimatedObject background3;
@@ -151,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
             }
             if (System.currentTimeMillis() - animTicker2 >= FRAME_DURATION_2) {
                 animTicker2 = System.currentTimeMillis();
-                for(Ennemy en : ennemies)
+                for(Enemy en : enemies)
                     en.nextFrame();
             }
 
@@ -171,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
 
 
-            for(Ennemy en : ennemies) {
+            for(Enemy en : enemies) {
                 if (en.getGravityState()) {
                     en.applyGravity();
 
@@ -241,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
             HashMap<Integer,GameObject> map = getObjectsAround(mario);
             if(map!=null) {
                 if((top = map.get(AT_TOP))!=null) {
-                    if (top instanceof Ennemy)
+                    if (top instanceof Enemy)
                         mario.getDirection(); // TODO life
                     else if (mario.getVelocity() < 0) {
                         mario.setVelocity(0); // TODO top.triggerAction();
@@ -249,12 +254,12 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                     }
                 }
                 if((left = map.get(AT_LEFT))!=null || (right = map.get(AT_RIGHT))!=null)
-                    if( (left != null && left instanceof Ennemy) || (right != null && right instanceof Ennemy))
+                    if( (left != null && left instanceof Enemy) || (right != null && right instanceof Enemy))
                         mario.getDirection(); // TODO life
                     else
                         canMove = false;
                 if((bottom = map.get(AT_BOTTOM))!=null) {
-                    if(bottom instanceof Ennemy && mario.getVelocity() >=0) {
+                    if(bottom instanceof Enemy && mario.getVelocity() >=0) {
                         jumping = true;
                         mario.setVelocity(-12); // TODO kill ennemy
                     }
@@ -302,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 r3.offset(-mario.getSpeed()/6,0);
                 for (GameObject obj : objects)
                     obj.setOffset(mario.getDirection(), mario.getSpeed());
-                for(Ennemy en : ennemies)
+                for(Enemy en : enemies)
                     en.setOffset(mario.getDirection(), mario.getSpeed());
             }
             else if(mario.getPos().left < SCROLL_LEFT_POS -1) {
@@ -312,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 r3.offset(-mario.getSpeed()/6,0);
                 for (GameObject obj : objects)
                     obj.setOffset(mario.getDirection(), -mario.getSpeed());
-                for(Ennemy en : ennemies)
+                for(Enemy en : enemies)
                     en.setOffset(mario.getDirection(), -mario.getSpeed());
 
             }
@@ -351,22 +356,13 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         setContentView(surface);
         initFullScreen();
 
-        int map [][] = Generator.generateMap(130, 40, 0);
-        StringBuilder row = new StringBuilder();
-        for(int h=0;h<40;h++) {
-            for (int w = 0; w < 130; w++)
-                row.append(map[h][w]).append(" ");
-            row.append("\n");
-        }
-        Log.d(":-:",row.toString());
-
         surface.setOnTouchListener(OnTouchListener);
 
         SCROLL_LEFT_POS = getScreenRect().width()*0.2;
         SCROLL_RIGHT_POS = getScreenRect().width()*0.4;
 
-
         Resources res = getResources();
+        _spawner = new Spawners(res);
 
         // BACKGROUND POS
 
@@ -376,6 +372,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         r3 = getScreenRect();
         r3.offset(-getScreenRect().width(),0);
 
+
         background1 = new UnanimatedObject(res,R.drawable.bkg_0,false);
         background1.setPos(r1.left,r1.top);
         background2 = new UnanimatedObject(res,R.drawable.bkg_0,false);
@@ -383,41 +380,8 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         background3 = new UnanimatedObject(res,R.drawable.bkg_0,false);
         background3.setPos(r3.left,r3.top);
 
-        // OBJECTS
 
-        objects = new ArrayList<>();
-        objects.add(new UnanimatedObject(res,R.drawable.block_0,true,500,600));
-        objects.add(new UnanimatedObject(res,R.drawable.block_0,true,(int) SCROLL_LEFT_POS + 3*GameObject.BASE_WIDTH , getScreenRect().height()-GameObject.BASE_HEIGHT*2));
-        objects.add(new UnanimatedObject(res,R.drawable.block_0,true,(int) SCROLL_LEFT_POS + 6*GameObject.BASE_WIDTH , getScreenRect().height()-GameObject.BASE_HEIGHT*4));
-
-
-        // ENNEMIES
-        // Default ennemies
-        Ennemy goomba = new Ennemy(res, new int[]{
-                R.drawable.goomba_0,
-                R.drawable.goomba_1,
-                R.drawable.goomba_2,
-                R.drawable.goomba_3},
-                Ennemy.DEFAULT_SPEED,
-                true);
-        goomba.setPos(getScreenRect().right-GameObject.BASE_WIDTH*2,getScreenRect().height()-GameObject.BASE_HEIGHT*2);
-
-        Ennemy billball = new Ennemy(res, new int[]{
-                R.drawable.billball_0,
-                R.drawable.billball_1},
-                Ennemy.BILLBALL_SPEED,
-                false);
-        billball.setPos(getScreenRect().right+GameObject.BASE_WIDTH,getScreenRect().height()-GameObject.BASE_HEIGHT*8);
-
-        ennemies = new ArrayList<>();
-        ennemies.add(goomba);
-        ennemies.add(billball);
-
-        // GROUND
-
-        for(int i =0; i<getScreenRect().width(); i+=GameObject.BASE_WIDTH) {
-            objects.add(new UnanimatedObject(res,R.drawable.ground_0,true,i,getScreenRect().height()-GameObject.BASE_HEIGHT));
-        }
+        loadMap();
 
 
         // MARIO
@@ -478,28 +442,42 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         handler.post(runnable);
     }
 
+
+
+    private void loadMap() {
+        int map [][] = Generator.generateMap(MAP_WIDTH, MAP_HEIGHT, 0);
+        for (int h = 0; h < MAP_HEIGHT; h++) {
+            for (int w = 0; w < MAP_WIDTH; w++) {
+                int t = map[h][w];
+                if (t != Tiles.NONE.getVal()) {
+                    GameObject spawner = _spawner.at(t);
+                    if(spawner != null)
+                        objects.add(spawner.spawnAtPos(GameObject.BASE_WIDTH * w, GameObject.BASE_HEIGHT * h));
+                }
+            }
+        }
+    }
+
     FPSCounter fps = new FPSCounter();
 
     @Override
     public void onDrawFrame(GL10 gl, SpriteBatcher sb) {
 
         // CONSTANTS
-        sb.drawText(R.string.font,"FPS : ",300,40,1f);
-        sb.drawText(R.string.font,fps.logFrame(),350,40,1f);
-
-
+        sb.drawText(R.string.font,"FPS : "+fps.logFrame(),300,40,1f);
 
         // DRAW
         sb.draw(mario);
-        sb.draw(background1, r1);
-        sb.draw(background2, r2);
-        sb.draw(background3, r3);
 
         // TODO if sort de l'ecran
         for(GameObject obj : objects)
             sb.draw(obj);
-        for(Ennemy en : ennemies)
+        for(Enemy en : enemies)
             sb.draw(en);
+
+        sb.draw(background1, r1);
+        sb.draw(background2, r2);
+        sb.draw(background3, r3);
 
 
         handler.post(runnable);
@@ -527,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         int frames = 0;
         int bkp = 0;
 
-        public String logFrame() {
+        String logFrame() {
             frames++;
             if(System.nanoTime() - startTime >= 1000000000) {
                 bkp = frames;
@@ -569,7 +547,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 map.put(AT_TOP, obj);
         }
 
-        for(Ennemy en : ennemies) {
+        for(Enemy en : enemies) {
             if (o.isOnTopOf(en))
                 map.put(AT_BOTTOM, en);
             else if (o.isAtLeftOf(en))
