@@ -1,28 +1,39 @@
 package com.gueg.mario;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
+
+import com.gueg.mario.objects.AnimatedObject;
+import com.gueg.mario.objects.Enemy;
+import com.gueg.mario.objects.GameObject;
+import com.gueg.mario.objects.UnanimatedObject;
 
 import java.util.HashMap;
 
 public class Spawners {
 
+    @SuppressLint("UseSparseArrays")
     private HashMap<Integer, GameObject> _spawners = new HashMap<>();
 
-    UnanimatedObject ground;
-    UnanimatedObject block;
-    Enemy goomba;
-    Enemy billball;
 
     public Spawners(Resources res) {
-        ground = new UnanimatedObject(res,
+        UnanimatedObject ground = new UnanimatedObject(res,
                 R.drawable.ground_0,
                 true);
         _spawners.put(Tiles.UP.getVal(), ground);
-        block = new UnanimatedObject(res,
+        UnanimatedObject block = new UnanimatedObject(res,
                 R.drawable.block_0,
                 true);
         _spawners.put(Tiles.BRICK.getVal(), block);
-        goomba = new Enemy(res, new int[]{
+        AnimatedObject qblock = new AnimatedObject(res, new int[] {
+                R.drawable.qblock_0,
+                R.drawable.qblock_1,
+                R.drawable.qblock_2,
+                R.drawable.qblock_3},
+                false,
+                true);
+        _spawners.put(Tiles.QUESTION.getVal(), qblock);
+        Enemy goomba = new Enemy(res, new int[]{
                 R.drawable.goomba_0,
                 R.drawable.goomba_1,
                 R.drawable.goomba_2,
@@ -30,7 +41,7 @@ public class Spawners {
                 Enemy.DEFAULT_SPEED,
                 true);
         _spawners.put(Tiles.GOOMBA.getVal(), goomba);
-        billball = new Enemy(res, new int[]{
+        Enemy billball = new Enemy(res, new int[]{
                 R.drawable.billball_0,
                 R.drawable.billball_1},
                 Enemy.BILLBALL_SPEED,

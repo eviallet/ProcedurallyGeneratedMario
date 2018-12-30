@@ -1,4 +1,4 @@
-package com.gueg.mario;
+package com.gueg.mario.objects;
 
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -8,7 +8,7 @@ public class Mario extends AnimatedObject {
     public static final int MAX_SPEED_X_WALKING = 12;
     public static final int MAX_SPEED_X_RUNNING = 20;
 
-    private boolean _direction = true;
+    private boolean _direction = RIGHT;
     public boolean moving = false;
     public boolean running =false;
     public boolean jumping =false;
@@ -25,9 +25,9 @@ public class Mario extends AnimatedObject {
         else if(_velocityY > 0) // falling
             setFrame(3,_direction);
         else if(Math.abs(_velocityX)>0 && Math.abs(_velocityX) <= MAX_SPEED_X_WALKING) // walking
-            super.nextFrame(FRAME_WALK);
+            super.nextFrame(Frames.WALK);
         else if(Math.abs(_velocityX) > MAX_SPEED_X_WALKING) // running
-            super.nextFrame(FRAME_RUN);
+            super.nextFrame(Frames.RUN);
         else
             setFrame(0,_direction); // idle
     }
@@ -43,7 +43,7 @@ public class Mario extends AnimatedObject {
     }
 
     private void moveLeft(boolean running) {
-        _direction = false;
+        _direction = LEFT;
         if(_velocityX>0)
             _velocityX = 0;
         _velocityX--;
@@ -57,7 +57,7 @@ public class Mario extends AnimatedObject {
     }
 
     private void moveRight(boolean running) {
-        _direction = true;
+        _direction = RIGHT;
         if(_velocityX<0)
             _velocityX = 0;
         _velocityX++;
@@ -72,7 +72,7 @@ public class Mario extends AnimatedObject {
 
     public void slowDown() {
         if(_velocityX!=0) {
-            if (getDirection())
+            if (getDirection() == RIGHT)
                 _velocityX--;
             else
                 _velocityX++;
@@ -81,7 +81,7 @@ public class Mario extends AnimatedObject {
 
     public void slowDownQuickly() {
         if(_velocityX!=0) {
-            if (getDirection()) {
+            if (getDirection() == RIGHT) {
                 _velocityX -= 3;
                 if(_velocityX<0)
                     _velocityX = 0;

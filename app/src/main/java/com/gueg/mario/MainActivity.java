@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 
+import com.gueg.mario.objects.Enemy;
+import com.gueg.mario.objects.GameObject;
+import com.gueg.mario.objects.Mario;
 import com.twicecircled.spritebatcher.Drawer;
 import com.twicecircled.spritebatcher.SpriteBatcher;
 
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
     private Spawners _spawner;
 
     static Rect screenRect;
+    Rect visibleScreen = new Rect();
 
     static ArrayList<GameObject> objects = new ArrayList<>();
     static ArrayList<Enemy> enemies = new ArrayList<>();
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 R.drawable.running_3,
                 // ^ right
         });
-        mario.setPos(GameObject.BASE_WIDTH * 3 , screenRect.height()-GameObject.BASE_HEIGHT*2);
+        mario.setPos(GameObject.BASE_WIDTH * 3, screenRect.height() - GameObject.BASE_HEIGHT * 2);
 
         bkg = new Backgrounds(res);
 
@@ -113,6 +117,10 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 R.drawable.running_2,
                 R.drawable.running_3,
                 R.drawable.block_0,
+                R.drawable.qblock_0,
+                R.drawable.qblock_1,
+                R.drawable.qblock_2,
+                R.drawable.qblock_3,
                 R.drawable.billball_0,
                 R.drawable.billball_1,
                 R.string.font
@@ -149,26 +157,29 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
     @Override
     public void onDrawFrame(GL10 gl, SpriteBatcher sb) {
+        updater.update();
+
         // CONSTANTS
-        sb.drawText(R.string.font,"FPS : "+fps.logFrame(),300,40,1f);
+        sb.drawText(R.string.font, "FPS : "+ fps.logFrame(), 300, 40, 1f);
 
         // DRAW
         sb.draw(mario);
 
-        // TODO if sort de l'ecran
-        /*
+        visibleScreen.left = mario.getPos().left - screenRect.width();
+        visibleScreen.right = mario.getPos().right + screenRect.width();
+        visibleScreen.top = mario.getPos().top - screenRect.height();
+        visibleScreen.bottom = mario.getPos().bottom + screenRect.height();
+
         for(GameObject obj : objects)
-            sb.draw(obj);
+            if(obj.isOnScreen(visibleScreen))
+                sb.draw(obj);
         for(Enemy en : enemies)
-            sb.draw(en);*/
-        for(int i=0; i<objects.size()/10; i++)
-            sb.draw(objects.get(i));
+            if(en.isOnScreen(visibleScreen))
+                sb.draw(en);
 
         sb.draw(bkg.background1, bkg.r1);
         sb.draw(bkg.background2, bkg.r2);
         sb.draw(bkg.background3, bkg.r3);
-
-        updater.update();
     }
 
 
@@ -202,11 +213,6 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         }
         screenRect = new Rect(0,0,metrics.widthPixels+navBarSize,metrics.heightPixels);
     }
-
-
-
-
-
 
     private void initFullScreen() {
         View decorView = getWindow().getDecorView();

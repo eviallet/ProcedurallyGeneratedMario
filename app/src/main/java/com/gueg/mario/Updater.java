@@ -1,11 +1,15 @@
 package com.gueg.mario;
 
+import com.gueg.mario.objects.AnimatedObject;
+import com.gueg.mario.objects.Enemy;
+import com.gueg.mario.objects.GameObject;
+
 import java.util.HashMap;
 
-import static com.gueg.mario.GameObject.AT_BOTTOM;
-import static com.gueg.mario.GameObject.AT_LEFT;
-import static com.gueg.mario.GameObject.AT_RIGHT;
-import static com.gueg.mario.GameObject.AT_TOP;
+import static com.gueg.mario.objects.GameObject.AT_BOTTOM;
+import static com.gueg.mario.objects.GameObject.AT_LEFT;
+import static com.gueg.mario.objects.GameObject.AT_RIGHT;
+import static com.gueg.mario.objects.GameObject.AT_TOP;
 import static com.gueg.mario.MainActivity.bkg;
 import static com.gueg.mario.MainActivity.enemies;
 import static com.gueg.mario.MainActivity.mario;
@@ -18,9 +22,10 @@ public class Updater {
     private double SCROLL_RIGHT_POS;
 
     private long animTicker = System.currentTimeMillis();
-    private static final long FRAME_DURATION = 50;
+    private static final long FRAME_DURATION = 100;
     private long animTicker2 = System.currentTimeMillis();
-    private static final long FRAME_DURATION_2 = 200;
+    private static final long FRAME_DURATION_2 = 400;
+    private boolean animObjects = false;
 
 
     Updater() {
@@ -39,9 +44,13 @@ public class Updater {
                 if (System.currentTimeMillis() - animTicker >= FRAME_DURATION) {
                     animTicker = System.currentTimeMillis();
                     mario.nextFrame();
-                    for (GameObject obj : objects)
-                        if (obj instanceof AnimatedObject)
-                            ((AnimatedObject) obj).nextFrame();
+                    if(animObjects) {
+                        animObjects = true;
+                        for (GameObject obj : objects)
+                            if (obj instanceof AnimatedObject)
+                                ((AnimatedObject) obj).nextFrame();
+                    } else
+                        animObjects = true;
                 }
                 if (System.currentTimeMillis() - animTicker2 >= FRAME_DURATION_2) {
                     animTicker2 = System.currentTimeMillis();

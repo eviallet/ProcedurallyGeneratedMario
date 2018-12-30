@@ -1,4 +1,4 @@
-package com.gueg.mario;
+package com.gueg.mario.objects;
 
 import android.content.res.Resources;
 
@@ -12,6 +12,11 @@ public class Enemy extends AnimatedObject {
         super(res, resId, gravity);
         _velocityX = -speed; // going left by default
         _maxIndex = resId.length/2;
+    }
+
+    public Enemy(Resources res, int[] resId, int speed, boolean gravity, int sizeX, int sizeY) {
+        this(res, resId, speed, gravity);
+        setSize(sizeX, sizeY);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.gueg.mario;
+package com.gueg.mario.objects;
 
 import android.content.res.Resources;
 import android.util.Log;
@@ -8,13 +8,20 @@ public class AnimatedObject extends GameObject {
     protected int[] _resId;
     private int _index = 0;
 
-    protected String FRAME_WALK = "w";
-    protected String FRAME_RUN = "r";
+    enum Frames {
+        WALK,
+        RUN
+    }
 
 
     public AnimatedObject(Resources res, int[] resId, boolean gravity) {
         super(res, resId[0], gravity);
         _resId = resId;
+    }
+
+    public AnimatedObject(Resources res, int[] resId, boolean gravity, boolean solid) {
+        this(res, resId, gravity);
+        setSolid(solid);
     }
 
     /**
@@ -45,14 +52,14 @@ public class AnimatedObject extends GameObject {
      * Mario
      * @param state
      */
-    protected void nextFrame(String state) {
-        if(state.equals(FRAME_WALK)) {
+    protected void nextFrame(Frames state) {
+        if(state.equals(Frames.WALK)) {
             if(_index>=2)
                 _index=0;
             _index++;
             if (_index >= 2)
                 _index = 0;
-        } else if(state.equals(FRAME_RUN)) {
+        } else if(state.equals(Frames.RUN)) {
             if(_index<4||_index>=6)
                 _index=4;
             _index++;
@@ -73,7 +80,7 @@ public class AnimatedObject extends GameObject {
         _index = index;
 
         if(!(_index+_resId.length/2 > _resId.length)) {
-            if (direction)
+            if (direction==RIGHT)
                 setResId(_resId[_index]);
             else
                 setResId(_resId[_index + _resId.length / 2]);

@@ -3,6 +3,8 @@ package com.gueg.mario;
 import android.content.res.Resources;
 import android.graphics.Rect;
 
+import com.gueg.mario.objects.UnanimatedObject;
+
 import static com.gueg.mario.MainActivity.screenRect;
 
 public class Backgrounds {

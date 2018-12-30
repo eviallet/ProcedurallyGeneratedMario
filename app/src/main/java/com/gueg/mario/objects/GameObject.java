@@ -1,4 +1,4 @@
-package com.gueg.mario;
+package com.gueg.mario.objects;
 
 
 import android.annotation.SuppressLint;
@@ -11,6 +11,12 @@ import java.util.HashMap;
 
 @SuppressWarnings("ALL")
 public abstract class GameObject implements Cloneable {
+
+    private static final int X = 0;
+    private static final int Y = 1;
+
+    public static final boolean LEFT = false;
+    public static final boolean RIGHT = true;
 
     public static final int BASE_WIDTH = 100;
     public static final int BASE_HEIGHT = 100;
@@ -35,11 +41,11 @@ public abstract class GameObject implements Cloneable {
         _solid = false;
         _gravity = gravity;
         _size = new int[] {BASE_WIDTH,BASE_HEIGHT};
-        _pos = new Rect(0,0,_size[0],_size[1]);
+        _pos = new Rect(0, 0, _size[X], _size[Y]);
     }
 
-    public void setSolid(boolean state) {
-        _solid = state;
+    public void setSolid(boolean solid) {
+        _solid = solid;
     }
 
     public boolean isSolid() {
@@ -51,11 +57,10 @@ public abstract class GameObject implements Cloneable {
     }
 
     public void setSize(int x, int y) {
-        _size[0]=x*BASE_WIDTH;
-        _size[1]=y*BASE_HEIGHT;
-        _pos.set(_pos.left, _pos.top, _pos.left +_size[0], _pos.top + _size[1]);
+        _size[X] = x * BASE_WIDTH;
+        _size[Y] = y * BASE_HEIGHT;
+        _pos.set(_pos.left, _pos.top, _pos.left +_size[X], _pos.top + _size[Y]);
     }
-
     public int[] getSize() {
         return _size;
     }
@@ -73,7 +78,7 @@ public abstract class GameObject implements Cloneable {
     }
 
     public void setPos(int x, int y) {
-        _pos.set(x, y, x + _size[0], y + _size[1]);
+        _pos.set(x, y, x + _size[X], y + _size[Y]);
     }
     public Rect getPos() {
         return _pos;
@@ -142,7 +147,7 @@ public abstract class GameObject implements Cloneable {
 
 
     public boolean isOnScreen(Rect visibleScreen) {
-        return _pos.intersect(visibleScreen);
+        return Rect.intersects(_pos, visibleScreen);
     }
 
 
@@ -162,7 +167,6 @@ public abstract class GameObject implements Cloneable {
                _pos.centerX() > obj.getPos().centerX() - obj.getPos().width()/2 - MAX_SHIFT_X &&
                _pos.centerX() < obj.getPos().centerX() + obj.getPos().width()/2 + MAX_SHIFT_X;
     }
-
 
     public boolean isAtLeftOf(GameObject obj) {
         return obj!=null && obj.isSolid() &&

@@ -1,4 +1,4 @@
-package com.gueg.mario;
+package com.gueg.mario.objects;
 
 import android.content.res.Resources;
 
