@@ -157,8 +157,6 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
     @Override
     public void onDrawFrame(GL10 gl, SpriteBatcher sb) {
-        updater.update();
-
         // CONSTANTS
         sb.drawText(R.string.font, "FPS : "+ fps.logFrame(), 300, 40, 1f);
 
@@ -180,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         sb.draw(bkg.background1, bkg.r1);
         sb.draw(bkg.background2, bkg.r2);
         sb.draw(bkg.background3, bkg.r3);
+
+
+        updater.update();
     }
 
 
