@@ -17,13 +17,6 @@
 
 package com.twicecircled.spritebatcher;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.ArrayList;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -34,7 +27,17 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLUtils;
 import android.util.Log;
 import android.util.SparseArray;
-import com.gueg.mario.GameObject;
+
+import com.gueg.mario.entities.GameObject;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
+import java.util.ArrayList;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 
 
@@ -438,7 +441,7 @@ public class SpriteBatcher implements Renderer {
     public void draw(GameObject obj) {
         Texture texture = texturesByResourceId.get(obj.getResId());
         if (texture != null) {
-            texture.addSprite(obj.getDrawableRect(), obj.getPos());
+            texture.addSprite(obj.getDrawableRect(obj.getResId()), obj.getPos());
         } else
             Log.w("SpriteBatcher", "Warning: resourceId not found");
     }
@@ -446,7 +449,7 @@ public class SpriteBatcher implements Renderer {
 	public void draw(GameObject obj, Rect dst) {
 		Texture texture = texturesByResourceId.get(obj.getResId());
 		if (texture != null) {
-			texture.addSprite(obj.getDrawableRect(), dst);
+			texture.addSprite(obj.getDrawableRect(obj.getResId()), dst);
 		} else
 			Log.w("SpriteBatcher", "Warning: resourceId not found");
 	}

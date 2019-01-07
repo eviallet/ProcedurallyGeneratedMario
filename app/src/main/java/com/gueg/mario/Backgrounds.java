@@ -3,12 +3,11 @@ package com.gueg.mario;
 import android.content.res.Resources;
 import android.graphics.Rect;
 
-import com.gueg.mario.objects.UnanimatedObject;
-
-import static com.gueg.mario.MainActivity.screenRect;
+import com.gueg.mario.entities.UnanimatedObject;
 
 public class Backgrounds {
 
+    private Rect screenRect;
     Rect r1;
     Rect r2;
     Rect r3;
@@ -17,7 +16,17 @@ public class Backgrounds {
     UnanimatedObject background2;
     UnanimatedObject background3;
 
-    Backgrounds(Resources res) {
+    /*
+        ____________                 ____________
+         R1 |R2| R3      --->         R1 R|2 R|3
+        ------------    Scrolling    ------------
+             ^
+           Camera
+     */
+
+    Backgrounds(Resources res, Rect screenRect) {
+        this.screenRect = screenRect;
+
         r1 = screenRect;
         r2 = screenRect;
         r2.offset(screenRect.width(),0);
@@ -26,11 +35,36 @@ public class Backgrounds {
 
 
         background1 = new UnanimatedObject(res,R.drawable.bkg_0,false);
+        background1.setSize(screenRect.width(), screenRect.height());
         background1.setPos(r1.left,r1.top);
         background2 = new UnanimatedObject(res,R.drawable.bkg_0,false);
+        background2.setSize(screenRect.width(), screenRect.height());
         background2.setPos(r2.left,r2.top);
         background3 = new UnanimatedObject(res,R.drawable.bkg_0,false);
+        background3.setSize(screenRect.width(), screenRect.height());
         background3.setPos(r3.left,r3.top);
+    }
+
+    public void offset(int x) {
+
+        r1.offset(-x / 6, 0);
+        r2.offset(-x / 6, 0);
+        r3.offset(-x / 6, 0);
+
+        // Roll the backgrounds
+        if (r1.right <= screenRect.left) {
+            r1 = screenRect;
+            r2 = screenRect;
+            r2.offset(screenRect.width(), 0);
+            r3 = screenRect;
+            r3.offset(-screenRect.width(), 0);
+        } else if (r1.left >= screenRect.right) {
+            r1 = screenRect;
+            r2 = screenRect;
+            r2.offset(screenRect.width(), 0);
+            r3 = screenRect;
+            r3.offset(-screenRect.width(), 0);
+        }
     }
 
 

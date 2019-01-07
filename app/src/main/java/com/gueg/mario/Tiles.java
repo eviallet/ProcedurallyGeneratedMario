@@ -1,6 +1,5 @@
 package com.gueg.mario;
 
-import android.util.Log;
 
 public enum Tiles {
     // TYPES

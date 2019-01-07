@@ -1,0 +1,33 @@
+package com.gueg.mario.components;
+
+import com.gueg.mario.entities.Enemy;
+import com.gueg.mario.entities.GameObject;
+import com.gueg.mario.entities.Mario;
+
+public class GraphicsComponent extends Component {
+
+    private static long _ticker = System.currentTimeMillis();
+
+    private Animations _animations;
+    private int _frameDuration;
+
+    public GraphicsComponent(GameObject obj, Animations animations, int frameDuration) {
+        super(obj);
+        _animations = animations;
+        _frameDuration = frameDuration;
+    }
+
+    public void update() {
+        if (System.currentTimeMillis() - _ticker >= _frameDuration) {
+            _ticker = System.currentTimeMillis();
+            if(_obj instanceof Mario)
+                _animations.nextFrameForState(((Mario) _obj).getState());
+            if(_obj instanceof Enemy)
+                _animations.nextFrameForState(_obj.getVelocityDirection());
+        }
+    }
+
+    public int getResId() {
+        return _animations.getCurrentResId();
+    }
+}

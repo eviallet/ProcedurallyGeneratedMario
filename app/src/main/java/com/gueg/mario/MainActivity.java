@@ -1,6 +1,5 @@
 package com.gueg.mario;
 
-import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -10,9 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 
-import com.gueg.mario.objects.Enemy;
-import com.gueg.mario.objects.GameObject;
-import com.gueg.mario.objects.Mario;
+import com.gueg.mario.components.MarioBehavior;
+import com.gueg.mario.entities.GameObject;
+import com.gueg.mario.entities.Mario;
+import com.gueg.mario.input.InputProcessor;
 import com.twicecircled.spritebatcher.Drawer;
 import com.twicecircled.spritebatcher.SpriteBatcher;
 
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import javax.microedition.khronos.opengles.GL10;
 
-// TODO remove all that static stuff
 @SuppressWarnings({"ConstantConditions", "FieldCanBeLocal"})
 public class MainActivity extends AppCompatActivity implements Drawer {
 
@@ -30,25 +29,19 @@ public class MainActivity extends AppCompatActivity implements Drawer {
     private final int MAP_WIDTH = 130;
     private final int MAP_HEIGHT = 10;
 
+    private Rect screenRect;
+    private Rect visibleScreen = new Rect();
 
+    private Mario _mario;
     private Spawners _spawner;
+    private Backgrounds _bkg;
+    private ArrayList<GameObject> _objects;
+    private CollisionDetector _collisions;
 
-    static Rect screenRect;
-    Rect visibleScreen = new Rect();
-
-    static ArrayList<GameObject> objects = new ArrayList<>();
-    static ArrayList<Enemy> enemies = new ArrayList<>();
-    static Mario mario;
-    static Backgrounds bkg;
-
-    FPSCounter fps = new FPSCounter();
-
-    Updater updater;
+    private FPSCounter fps = new FPSCounter();
 
 
 
-
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,39 +51,31 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
         loadScreenRect();
 
-
-
         Resources res = getResources();
+
         _spawner = new Spawners(res);
 
+        _bkg = new Backgrounds(res, screenRect);
+
+        _objects = new ArrayList<>();
+
+        _mario = new Mario(res, new MarioBehavior.MarioEvents() {
+            @Override
+            public void onCameraMoved(Rect pos, int speed) {
+                _bkg.offset(speed);
+                for (int i = 1; i < _objects.size(); i++)
+                    _objects.get(i).setOffset(_mario.getVelocityX());
+            }
+        }, screenRect);
+        _mario.setGridPos(3, 2, screenRect);
+
+        _objects.add(_mario);
+
+        _collisions = new CollisionDetector(_objects);
+
+        surface.setOnTouchListener(new InputProcessor(screenRect, _mario.getInputListener()));
+
         loadMap();
-
-
-        // MARIO
-
-        mario = new Mario(res,new int[] {
-                R.drawable.walking_0,
-                R.drawable.walking_1,
-                R.drawable.jumping_0,
-                R.drawable.falling_0,
-                R.drawable.running_0,
-                R.drawable.running_1,
-                // ^ left
-                R.drawable.walking_2,
-                R.drawable.walking_3,
-                R.drawable.jumping_1,
-                R.drawable.falling_1,
-                R.drawable.running_2,
-                R.drawable.running_3,
-                // ^ right
-        });
-        mario.setPos(GameObject.BASE_WIDTH * 3, screenRect.height() - GameObject.BASE_HEIGHT * 2);
-
-        bkg = new Backgrounds(res);
-
-        updater = new Updater();
-
-        surface.setOnTouchListener(new InputProcessor());
 
         // SPRITE BATCHER
 
@@ -129,8 +114,6 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         SpriteBatcher sb = new SpriteBatcher(this, resourcesIds, this);
         sb.setMaxFPS(MAX_FPS);
         surface.setRenderer(sb);
-
-        updater.update();
     }
 
 
@@ -142,12 +125,8 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 int t = map[h][w];
                 if (t != Tiles.NONE.getVal()) {
                     GameObject spawner = _spawner.at(t);
-                    if(spawner != null) {
-                        if (spawner instanceof Enemy)
-                            enemies.add((Enemy)spawner.spawnAtPos(GameObject.BASE_WIDTH * w, GameObject.BASE_HEIGHT * h));
-                        else
-                            objects.add(spawner.spawnAtPos(GameObject.BASE_WIDTH * w, GameObject.BASE_HEIGHT * h));
-                    }
+                    if(spawner != null)
+                        _objects.add(spawner.spawnAtPos(GameObject.BASE_WIDTH * w, GameObject.BASE_HEIGHT * h));
                 }
             }
         }
@@ -157,30 +136,36 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
     @Override
     public void onDrawFrame(GL10 gl, SpriteBatcher sb) {
+        _collisions.update();
+
+        _mario.update();
+
+        visibleScreen.left = _mario.getPos().left - screenRect.width();
+        visibleScreen.right = _mario.getPos().right + screenRect.width();
+        visibleScreen.top = _mario.getPos().top - screenRect.height();
+        visibleScreen.bottom = _mario.getPos().bottom + screenRect.height();
+
+
+        for(int i = 1; i < _objects.size(); i++) {
+            GameObject obj = _objects.get(i);
+            if (obj.isOnScreen(visibleScreen))
+                obj.update();
+        }
+
+        // TODO synchronized ArrayList : enabled/disabled objects
+
         // CONSTANTS
         sb.drawText(R.string.font, "FPS : "+ fps.logFrame(), 300, 40, 1f);
 
         // DRAW
-        sb.draw(mario);
 
-        visibleScreen.left = mario.getPos().left - screenRect.width();
-        visibleScreen.right = mario.getPos().right + screenRect.width();
-        visibleScreen.top = mario.getPos().top - screenRect.height();
-        visibleScreen.bottom = mario.getPos().bottom + screenRect.height();
-
-        for(GameObject obj : objects)
+        for(GameObject obj : _objects)
             if(obj.isOnScreen(visibleScreen))
                 sb.draw(obj);
-        for(Enemy en : enemies)
-            if(en.isOnScreen(visibleScreen))
-                sb.draw(en);
 
-        sb.draw(bkg.background1, bkg.r1);
-        sb.draw(bkg.background2, bkg.r2);
-        sb.draw(bkg.background3, bkg.r3);
-
-
-        updater.update();
+        sb.draw(_bkg.background1, _bkg.r1);
+        sb.draw(_bkg.background2, _bkg.r2);
+        sb.draw(_bkg.background3, _bkg.r3);
     }
 
 
