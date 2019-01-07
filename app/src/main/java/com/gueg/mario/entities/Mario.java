@@ -2,7 +2,6 @@ package com.gueg.mario.entities;
 
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.util.Log;
 
 import com.gueg.mario.R;
 import com.gueg.mario.components.Animations;
@@ -39,6 +38,7 @@ public class Mario extends CollideableGameObject {
     private PhysicsComponent _physics;
     // Necessary for cloning
     private Rect _screenRect;
+    private int _direction = RIGHT;
 
     public Mario(Resources res, MarioBehavior.MarioEvents events, Rect screenRect) {
         super(res, true);
@@ -62,17 +62,27 @@ public class Mario extends CollideableGameObject {
         _graphics = new GraphicsComponent(this, new Animations<>(sprites), MARIO_FRAME_DURATION);
     }
 
+    // PHYSICS
     @Override
     public void setObjectsAround(HashMap<Integer, GameObject> objectsAround) {
         _physics.setObjectsAround(objectsAround);
     }
+    // --- Collisions
+    @Override
+    public void onCollisionXOccured() {
+        _input.slowDownQuickly();
+    }
+    @Override
+    public void onCollisionYOccured() {
+        setVelocityY(0);
+    }
 
+    // MAIN LOOP
     @Override
     public void update() {
-        Log.d(":-:","Mario pos x = "+getPos().centerX()+" y = "+getPos().centerY());
         _input.update();
-        _behavior.onNewFrame(this);
         _physics.update();
+        _behavior.onNewFrame(this);
         _graphics.update();
     }
 
@@ -86,8 +96,12 @@ public class Mario extends CollideableGameObject {
         return new Mario(_res, _behavior.getListener(), _screenRect);
     }
 
+    // GETTERS
     public boolean isFalling() {
         return getVelocityY() > 0;
+    }
+    public boolean isOnGround() {
+        return _physics.isOnGround();
     }
     public boolean isJumping() {
         return getVelocityY() < 0;
@@ -95,15 +109,18 @@ public class Mario extends CollideableGameObject {
     public boolean isWalking() {
         return Math.abs(getVelocityX()) <= InputComponent.MAX_SPEED_X_WALKING;
     }
-    public int getDirection() {
-        return (_state == State.IDLE_R || _state == State.WALK_R || _state == State.RUN_R || _state == State.JUMP_R || _state == State.FALL_R) ? RIGHT : LEFT;
+    public void setDirection(int direction) {
+        _direction = direction;
     }
-
+    public int getDirection() {
+        return _direction;
+    }
     public Input.InputListener getInputListener() {
         return _input;
     }
 
 
+    // STATE
     public void setState(State state) {
         _state = state;
     }

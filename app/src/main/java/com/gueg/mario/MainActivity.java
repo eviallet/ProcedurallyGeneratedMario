@@ -64,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements Drawer {
             public void onCameraMoved(Rect pos, int speed) {
                 _bkg.offset(speed);
                 for (int i = 1; i < _objects.size(); i++)
-                    _objects.get(i).setOffset(_mario.getVelocityX());
+                    _objects.get(i).setOffset(-_mario.getVelocityX());
+                _bkg.offset(-_mario.getVelocityX()/6);
             }
         }, screenRect);
         _mario.setGridPos(3, 2, screenRect);

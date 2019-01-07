@@ -3,11 +3,12 @@ package com.gueg.mario.entities;
 import android.content.res.Resources;
 
 import com.gueg.mario.CollisionDetector;
+import com.gueg.mario.CollisionResolver;
 
 import java.util.HashMap;
 
 
-public abstract class CollideableGameObject extends GameObject implements CollisionDetector.Collideable {
+public abstract class CollideableGameObject extends GameObject implements CollisionDetector.Collideable, CollisionResolver.CollisionResolverListener {
 
     private boolean _collisionOccured = false;
 

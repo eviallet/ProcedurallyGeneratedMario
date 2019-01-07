@@ -23,4 +23,9 @@ public class CollisionResolver {
         else                        // jumping
             obj.setPos(obj.getPos().left, other.getPos().bottom);
     }
+
+    public interface CollisionResolverListener {
+        void onCollisionXOccured();
+        void onCollisionYOccured();
+    }
 }

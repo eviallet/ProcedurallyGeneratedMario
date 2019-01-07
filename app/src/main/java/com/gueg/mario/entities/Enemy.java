@@ -4,7 +4,6 @@ import android.content.res.Resources;
 
 import com.gueg.mario.R;
 import com.gueg.mario.components.Animations;
-import com.gueg.mario.components.BehaviorComponent;
 import com.gueg.mario.components.GraphicsComponent;
 import com.gueg.mario.components.PhysicsComponent;
 
@@ -17,17 +16,15 @@ public class Enemy extends CollideableGameObject {
     public static final int DEFAULT_SPEED = 6;
     public static final int BILLBALL_SPEED = 14;
 
-    private BehaviorComponent _behavior;
     private GraphicsComponent _graphics;
     private PhysicsComponent _physics;
     // required for cloning
 
 
-    public Enemy(Resources res, int speed, boolean gravity, BehaviorComponent.Behavior<Enemy> behavior) {
+    public Enemy(Resources res, int speed, boolean gravity) {
         super(res, gravity);
         setVelocityX(-speed); // going left by default
 
-        _behavior = new BehaviorComponent(this, behavior);
         HashMap<Integer, Integer[]> sprites = new HashMap<>();
         sprites.put(
                 LEFT,
@@ -52,13 +49,20 @@ public class Enemy extends CollideableGameObject {
     }
 
     @Override
+    public void onCollisionXOccured() {
+        setVelocityX(-getVelocityX());
+    }
+    @Override
+    public void onCollisionYOccured() {
+    }
+
+    @Override
     public Enemy clone() {
-        return new Enemy(_res, getVelocityX(), isAffectedByGravity(), _behavior.getBehavior());
+        return new Enemy(_res, getVelocityX(), isAffectedByGravity());
     }
 
 
     public void update() {
-        _behavior.update();
         _physics.update();
         _graphics.update();
     }

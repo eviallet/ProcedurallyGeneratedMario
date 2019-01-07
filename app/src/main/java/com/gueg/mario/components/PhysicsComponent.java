@@ -1,6 +1,5 @@
 package com.gueg.mario.components;
 
-import com.gueg.mario.CollisionDetector;
 import com.gueg.mario.CollisionResolver;
 import com.gueg.mario.entities.CollideableGameObject;
 import com.gueg.mario.entities.GameObject;
@@ -35,18 +34,24 @@ public class PhysicsComponent extends Component {
             GameObject other;
             //Horizontal collisions
             if ((_obj.getVelocityDirection() == LEFT && ((other = _objectsAround.get(AT_LEFT)) != null)) ||
-                    (_obj.getVelocityDirection() == RIGHT && ((other = _objectsAround.get(AT_RIGHT)) != null)))
+                    (_obj.getVelocityDirection() == RIGHT && ((other = _objectsAround.get(AT_RIGHT)) != null))) {
                 CollisionResolver.clipToHorizontalObject(_obj, other);
-            else
+                ((CollideableGameObject) _obj).onCollisionXOccured();
+            } else
                 _obj.applyVelocityX();
 
             // Vertical collisions
             if ((_obj.getVelocityY() < 0 && ((other = _objectsAround.get(AT_TOP)) != null)) ||
-                    (_obj.getVelocityY() > 0 && ((other = _objectsAround.get(AT_BOTTOM)) != null)))
+                    (_obj.getVelocityY() > 0 && ((other = _objectsAround.get(AT_BOTTOM)) != null))) {
                 CollisionResolver.clipToVerticalObject(_obj, other);
-            else
+                ((CollideableGameObject) _obj).onCollisionYOccured();
+            } else
                 _obj.applyVelocityY();
         }
+    }
+
+    public boolean isOnGround() {
+        return _objectsAround.get(AT_BOTTOM) != null;
     }
 
     public void setObjectsAround(HashMap<Integer, GameObject> objectsAround) {
@@ -60,4 +65,5 @@ public class PhysicsComponent extends Component {
             velocityY = MAX_VELOCITY_Y;
         _obj.setVelocityY(velocityY);
     }
+
 }

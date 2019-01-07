@@ -21,7 +21,4 @@ public class BehaviorComponent extends Component {
         void onNewFrame(T obj);
     }
 
-    public Behavior getBehavior() {
-        return _behavior;
-    }
 }

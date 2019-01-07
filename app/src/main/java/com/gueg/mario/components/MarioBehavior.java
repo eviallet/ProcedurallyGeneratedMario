@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import com.gueg.mario.entities.Mario;
 
 import static com.gueg.mario.entities.GameObject.LEFT;
+import static com.gueg.mario.entities.GameObject.RIGHT;
 import static com.gueg.mario.entities.GameObject.X;
 
 public class MarioBehavior implements BehaviorComponent.Behavior<Mario> {
@@ -13,6 +14,7 @@ public class MarioBehavior implements BehaviorComponent.Behavior<Mario> {
     private static double SCROLL_RIGHT_POS;
 
     private MarioEvents _listener;
+    private int _prevVelocityX = 0;
 
     public MarioBehavior(MarioEvents listener, Rect screenRect) {
         _listener = listener;
@@ -39,16 +41,22 @@ public class MarioBehavior implements BehaviorComponent.Behavior<Mario> {
 
 
     private void updateState(Mario mario) {
+        if(_prevVelocityX >= 0 && mario.getVelocityX() < 0)
+            mario.setDirection(LEFT);
+        else if(_prevVelocityX <= 0 && mario.getVelocityX() > 0)
+            mario.setDirection(RIGHT);
+        _prevVelocityX = mario.getDirection();
+
         if (mario.isJumping())
-            mario.setState(mario.getVelocityDirection() == LEFT ? Mario.State.JUMP_L : Mario.State.JUMP_R);
+            mario.setState(mario.getDirection() == LEFT ? Mario.State.JUMP_L : Mario.State.JUMP_R);
         else if(mario.isFalling())
-            mario.setState(mario.getVelocityDirection() == LEFT ? Mario.State.FALL_L : Mario.State.FALL_R);
+            mario.setState(mario.getDirection() == LEFT ? Mario.State.FALL_L : Mario.State.FALL_R);
         else if(mario.getVelocityX() == 0) // idle
             mario.setState(mario.getDirection() == LEFT ? Mario.State.IDLE_L : Mario.State.IDLE_R);
         else if(mario.isWalking())
-            mario.setState(mario.getVelocityDirection() == LEFT ? Mario.State.WALK_L : Mario.State.WALK_R);
-        else // Math.abs(mario.getVelocityX()) > MAX_SPEED_X_WALKING) // running
-            mario.setState(mario.getVelocityDirection() == LEFT ? Mario.State.RUN_L : Mario.State.RUN_R);
+            mario.setState(mario.getDirection() == LEFT ? Mario.State.WALK_L : Mario.State.WALK_R);
+        else // if(mario.isRunning())
+            mario.setState(mario.getDirection() == LEFT ? Mario.State.RUN_L : Mario.State.RUN_R);
     }
 
     public MarioEvents getListener() {
