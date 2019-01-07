@@ -29,7 +29,7 @@ public class InputComponent extends Component implements Input.InputListener {
 
     @Override
     public void update() {
-        if(_input._jump && mario.getVelocityY() == 0) {
+        if(_input._jump && mario.getVelocityY() == 0 && mario.isOnGround()) {
             mario.setVelocityY(JUMP);
         } else if(!_input._jump && mario.getVelocityY() < JUMP / 2) {
             mario.setVelocityY(JUMP / 2);
@@ -78,7 +78,7 @@ public class InputComponent extends Component implements Input.InputListener {
             mario.setVelocityX(mario.getVelocityX() + 1);
     }
 
-    private void slowDownQuickly() {
+    public void slowDownQuickly() {
         if(mario.getVelocityX()!=0) {
             if (mario.getVelocityDirection() == RIGHT) {
                 mario.setVelocityX(mario.getVelocityX() - 3);

@@ -52,22 +52,27 @@ public class InputProcessor implements View.OnTouchListener {
 
         // SINGLE FINGER ON SCREEN
         if(event.getPointerCount()==1) {
-            _primaryPointerId = event.getPointerId(event.getActionIndex());
             switch (event.getAction()) {
                 case MotionEvent.ACTION_UP:
                     input.clear();
+                    _primaryPointerId = -1;
+                    _runningPointerId = -1;
+                    _jumpingPointerId = -1;
                     break;
                 case MotionEvent.ACTION_DOWN:
                 case MotionEvent.ACTION_MOVE:
                     switch (getScreenRegionTouched(event)) {
                         case LOWER_SCREEN_LEFT:
                             input._walkLeft = true;
+                            _primaryPointerId = event.getPointerId(event.getActionIndex());
                             break;
                         case LOWER_SCREEN_RIGHT:
                             input._walkRight = true;
+                            _primaryPointerId = event.getPointerId(event.getActionIndex());
                             break;
                         case UPPER_SCREEN:
                             input._jump = true;
+                            _jumpingPointerId = event.getPointerId(event.getActionIndex());
                             break;
                     }
                     break;
@@ -76,17 +81,14 @@ public class InputProcessor implements View.OnTouchListener {
 
         // MULTIPLE FINGERS ON SCREEN
         else {
-            MotionEvent.PointerCoords primaryCoords = new MotionEvent.PointerCoords();
-            event.getPointerCoords(0, primaryCoords);
-            MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
-            event.getPointerCoords(event.getActionIndex(),coords);
-            switch (event.getActionMasked()) {
-                case MotionEvent.ACTION_POINTER_DOWN:
-                    // Depending on where the first finger is...
-                    switch (getScreenRegionFromCoords(primaryCoords)) {
-                        case LOWER_SCREEN_LEFT:
-                        case LOWER_SCREEN_RIGHT:
-                            switch (getScreenRegionTouched(event)) {
+            if(event.getActionIndex() <= 3) {
+                MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+                event.getPointerCoords(event.getActionIndex(),coords);
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        // Depending on where the primary pointer is, if there is one...
+                        if (_primaryPointerId != -1) {
+                            switch (getScreenRegionFromCoords(coords)) {
                                 case LOWER_SCREEN_LEFT:
                                 case LOWER_SCREEN_RIGHT:
                                     input._run = true;
@@ -97,10 +99,8 @@ public class InputProcessor implements View.OnTouchListener {
                                     _jumpingPointerId = event.getPointerId(event.getActionIndex());
                                     break;
                             }
-                            break;
-
-                        case UPPER_SCREEN:
-                            switch (getScreenRegionTouched(event)) {
+                        } else {
+                            switch (getScreenRegionFromCoords(coords)) {
                                 case LOWER_SCREEN_LEFT:
                                     input._walkLeft = true;
                                     _primaryPointerId = event.getPointerId(event.getActionIndex());
@@ -110,22 +110,21 @@ public class InputProcessor implements View.OnTouchListener {
                                     _primaryPointerId = event.getPointerId(event.getActionIndex());
                                     break;
                             }
-                            break;
+                        }
+                        break; // ACTION_POINTER_DOWN
 
-                    }
-
-                    break;
-                case MotionEvent.ACTION_POINTER_UP:
-                    if(event.getActionIndex() == _primaryPointerId) {
-                        input._walkLeft = false;
-                        input._walkRight = false;
-                        input._run = false;
-                    } else if(event.getActionIndex() == _runningPointerId) {
-                        input._run = false;
-                    } else if(event.getActionIndex() == _jumpingPointerId) {
-                        input._jump = false;
-                    }
-                    break;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        if (event.getActionIndex() == _primaryPointerId) {
+                            input._walkLeft = false;
+                            input._walkRight = false;
+                            input._run = false;
+                        } else if (event.getActionIndex() == _runningPointerId) {
+                            input._run = false;
+                        } else if (event.getActionIndex() == _jumpingPointerId) {
+                            input._jump = false;
+                        }
+                        break; // ACTION_POINTER_UP
+                }
             }
         }
 
@@ -143,6 +142,7 @@ public class InputProcessor implements View.OnTouchListener {
             return LOWER_SCREEN_RIGHT;
     }
 
+
     private int getScreenRegionFromCoords(MotionEvent.PointerCoords e) {
         if(e.y < _halfScreenY)
             return UPPER_SCREEN;
@@ -151,5 +151,4 @@ public class InputProcessor implements View.OnTouchListener {
         else
             return LOWER_SCREEN_RIGHT;
     }
-
 }
