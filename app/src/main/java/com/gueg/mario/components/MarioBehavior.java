@@ -4,6 +4,7 @@ import android.graphics.Rect;
 
 import com.gueg.mario.entities.Mario;
 
+import static com.gueg.mario.entities.GameObject.BASE_HEIGHT;
 import static com.gueg.mario.entities.GameObject.LEFT;
 import static com.gueg.mario.entities.GameObject.RIGHT;
 import static com.gueg.mario.entities.GameObject.X;
@@ -12,6 +13,7 @@ public class MarioBehavior implements BehaviorComponent.Behavior<Mario> {
 
     private static double SCROLL_LEFT_POS;
     private static double SCROLL_RIGHT_POS;
+    private static int SCREEN_HEIGHT;
 
     private MarioEvents _listener;
     private int _prevVelocityX = 0;
@@ -21,10 +23,15 @@ public class MarioBehavior implements BehaviorComponent.Behavior<Mario> {
 
         SCROLL_LEFT_POS = screenRect.width()*0.2;
         SCROLL_RIGHT_POS = screenRect.width()*0.4;
+        SCREEN_HEIGHT = screenRect.height();
     }
 
     @Override
     public void onNewFrame(Mario mario) {
+
+        if(mario.getPos().top > SCREEN_HEIGHT)
+            mario.setPos(mario.getPos().left, BASE_HEIGHT);
+
 
         // SCROLLING
         if (mario.getPos().right > SCROLL_RIGHT_POS) {
