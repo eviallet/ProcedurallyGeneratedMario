@@ -8,6 +8,7 @@
 #include <random>
 #include <algorithm>
 #include <numeric>
+#include "random.h"
 
 constexpr double MAX_X = 100.0;
 constexpr double MAX_Y = 100.0;

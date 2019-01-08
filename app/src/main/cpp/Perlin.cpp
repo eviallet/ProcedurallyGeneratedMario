@@ -32,7 +32,7 @@ void Perlin::init() {
 	std::iota(_p.begin(), _p.end(), 0);
 
 	// Initialize a random engine
-	std::default_random_engine engine(rand());
+	std::default_random_engine engine(Random::uniform(0 , 65535));
 	
 	// Suffle  using the above random engine
 	std::shuffle(_p.begin(), _p.end(), engine);
