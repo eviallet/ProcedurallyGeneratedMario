@@ -65,21 +65,21 @@ public class CollisionDetector {
 
     private boolean isBelow(GameObject obj) {
         return obj!=null && obj.isSolid() &&
-                _obj.getPos().top >= obj.getPos().bottom - _obj.getVelocityY() &&
-                _obj.getPos().top <= obj.getPos().bottom - _obj.getVelocityY() &&
-                _obj.getPos().centerX() > obj.getPos().centerX() - obj.getPos().width()/2 - MAX_SHIFT_X &&
-                _obj.getPos().centerX() < obj.getPos().centerX() + obj.getPos().width()/2 + MAX_SHIFT_X;
+                _obj.getPos().top + _obj.getVelocityY() >= obj.getPos().top &&
+                _obj.getPos().top + _obj.getVelocityY() <= obj.getPos().bottom &&
+                _obj.getPos().centerX() > obj.getPos().left - MAX_SHIFT_X &&
+                _obj.getPos().centerX() < obj.getPos().right + MAX_SHIFT_X;
     }
 
     private boolean isAtLeftOf(GameObject obj) {
         return obj!=null && obj.isSolid() &&
-                ((obj.getPos().bottom >= _obj.getPos().bottom-2 && obj.getPos().top <= _obj.getPos().bottom-2)||(obj.getPos().bottom >= _obj.getPos().top-2 && obj.getPos().top <= _obj.getPos().top-2)) &&
+                ((obj.getPos().bottom > _obj.getPos().bottom && obj.getPos().top < _obj.getPos().bottom)||(obj.getPos().bottom > _obj.getPos().top && obj.getPos().top < _obj.getPos().top)) &&
                 _obj.getPos().right + _obj.getVelocityX() >= obj.getPos().left && _obj.getPos().right + _obj.getVelocityX() <= obj.getPos().right;
     }
 
     private boolean isAtRightOf(GameObject obj) {
         return obj!=null && obj.isSolid() &&
-                ((obj.getPos().bottom >= _obj.getPos().bottom-2 && obj.getPos().top <= _obj.getPos().bottom-2)||(obj.getPos().bottom >= _obj.getPos().top-2 && obj.getPos().top <= _obj.getPos().top-2)) &&
+                ((obj.getPos().bottom > _obj.getPos().bottom && obj.getPos().top < _obj.getPos().bottom)||(obj.getPos().bottom > _obj.getPos().top && obj.getPos().top < _obj.getPos().top)) &&
                 _obj.getPos().left + _obj.getVelocityX() <= obj.getPos().right && _obj.getPos().left + _obj.getVelocityX() >= obj.getPos().left;
     }
 
