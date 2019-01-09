@@ -76,6 +76,11 @@ public abstract class GameObject implements Cloneable {
         _size[Y] = y * BASE_HEIGHT;
         _pos.set(_pos.left, _pos.top, _pos.left +_size[X], _pos.top + _size[Y]);
     }
+    public void setSizePx(int x, int y) {
+        _size[X] = x;
+        _size[Y] = y;
+        _pos.set(_pos.left, _pos.top, _pos.left +_size[X], _pos.top + _size[Y]);
+    }
     public int[] getSize() {
         return _size;
     }

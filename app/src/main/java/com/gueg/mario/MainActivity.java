@@ -1,5 +1,6 @@
 package com.gueg.mario;
 
+import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,9 +175,9 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         for(GameObject obj : _objects)
             sb.draw(obj);
 
-        sb.draw(_bkg.background1, _bkg.r1);
-        sb.draw(_bkg.background2, _bkg.r2);
-        sb.draw(_bkg.background3, _bkg.r3);
+        sb.draw(_bkg.background1, _bkg.background1.getPos());
+        sb.draw(_bkg.background2, _bkg.background2.getPos());
+        sb.draw(_bkg.background3, _bkg.background3.getPos());
     }
 
 

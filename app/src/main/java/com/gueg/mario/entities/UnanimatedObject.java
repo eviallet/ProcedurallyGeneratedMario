@@ -7,9 +7,10 @@ public class UnanimatedObject extends GameObject {
 
     private int _resId;
 
-    private UnanimatedObject(Resources res, int resId, boolean isSolid) {
+    private UnanimatedObject(Resources res, int resId, int[] size, boolean isSolid) {
         setRes(res);
         _resId = resId;
+        setSizePx(size[X], size[Y]);
         setSolid(isSolid);
     }
 
@@ -31,6 +32,6 @@ public class UnanimatedObject extends GameObject {
 
     @Override
     public UnanimatedObject clone() {
-        return new UnanimatedObject(_res, _resId, isSolid());
+        return new UnanimatedObject(_res, _resId, getSize(), isSolid());
     }
 }
