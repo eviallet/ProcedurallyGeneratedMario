@@ -16,8 +16,6 @@ import com.gueg.mario.input.InputProcessor;
 import com.twicecircled.spritebatcher.Drawer;
 import com.twicecircled.spritebatcher.SpriteBatcher;
 
-import java.util.ArrayList;
-
 import javax.microedition.khronos.opengles.GL10;
 
 @SuppressWarnings({"ConstantConditions", "FieldCanBeLocal"})
@@ -35,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
     private Mario _mario;
     private Spawners _spawner;
     private Backgrounds _bkg;
-    private ArrayList<GameObject> _objects;
+    private SynchronizedArrayList<GameObject> _objects;
     private CollisionDetector _collisions;
 
     private FPSCounter fps = new FPSCounter();
@@ -57,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
 
         _bkg = new Backgrounds(res, screenRect);
 
-        _objects = new ArrayList<>();
+        _objects = new SynchronizedArrayList<>();
 
         _mario = new Mario(res, new MarioBehavior.MarioEvents() {
             @Override
@@ -65,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 _bkg.offset(speed);
                 for (int i = 1; i < _objects.size(); i++)
                     _objects.get(i).setOffset(-_mario.getVelocityX());
+                for (int i = 1; i < _objects.getDisabledSize(); i++)
+                    _objects.getDisabledAt(i).setOffset(-_mario.getVelocityX());
                 _bkg.offset(-_mario.getVelocityX()/6);
             }
         }, screenRect);
@@ -146,14 +146,24 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         visibleScreen.top = _mario.getPos().top - screenRect.height();
         visibleScreen.bottom = _mario.getPos().bottom + screenRect.height();
 
+        for(int i = 1; i < _objects.size(); i++) {
+            GameObject obj = _objects.get(i);
+            if (!obj.isOnScreen(visibleScreen))
+                _objects.disable(obj);
+        }
+        for(int i = 0; i < _objects.getDisabledSize(); i++) {
+            GameObject obj = _objects.getDisabledAt(i);
+            if (obj.isOnScreen(visibleScreen))
+                _objects.enable(obj);
+
+        }
+
 
         for(int i = 1; i < _objects.size(); i++) {
             GameObject obj = _objects.get(i);
-            if (obj.isOnScreen(visibleScreen))
-                obj.update();
+            obj.update();
         }
 
-        // TODO synchronized ArrayList : enabled/disabled objects
 
         // CONSTANTS
         sb.drawText(R.string.font, "FPS : "+ fps.logFrame(), 300, 40, 1f);
@@ -161,8 +171,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         // DRAW
 
         for(GameObject obj : _objects)
-            if(obj.isOnScreen(visibleScreen))
-                sb.draw(obj);
+            sb.draw(obj);
 
         sb.draw(_bkg.background1, _bkg.r1);
         sb.draw(_bkg.background2, _bkg.r2);

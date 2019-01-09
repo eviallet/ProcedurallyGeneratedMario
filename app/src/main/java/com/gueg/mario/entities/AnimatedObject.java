@@ -11,13 +11,14 @@ public class AnimatedObject extends GameObject {
 
     private GraphicsComponent _graphics;
     private Integer[] _resId;
+    public static final int DEFAULT_STATE = 0;
 
     public AnimatedObject(Resources res, Integer resId[], boolean gravity, boolean solid) {
         super(res, gravity);
         _resId = resId;
         setSolid(solid);
 
-        _graphics = new GraphicsComponent(this, new Animations<>(0, resId), OBJECT_FRAME_DURATION);
+        _graphics = new GraphicsComponent(this, new Animations<>(DEFAULT_STATE, resId), OBJECT_FRAME_DURATION);
     }
 
 

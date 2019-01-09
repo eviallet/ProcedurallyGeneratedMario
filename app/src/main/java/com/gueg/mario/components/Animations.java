@@ -1,6 +1,7 @@
 package com.gueg.mario.components;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import java.util.HashMap;
 
@@ -9,7 +10,6 @@ public class Animations<T> {
 
     private HashMap<T, Integer[]> _anim;
     private T _lastState;
-    private T _default;
     private int _resIndex = 0;
 
     /**
@@ -17,9 +17,9 @@ public class Animations<T> {
      * @param resId multiple sprites ids
      */
     public Animations(T def, Integer resId[]) {
-        _default = def;
+        _lastState = def;
         _anim = new HashMap<>(1);
-        _anim.put(_default, resId);
+        _anim.put(_lastState, resId);
     }
 
     /**
@@ -51,6 +51,7 @@ public class Animations<T> {
     }
 
     public int getCurrentResId() {
+        Log.d(":-:","anim array length : "+_anim.size()+" index is : "+_lastState+" ; length : "+_anim.get(_lastState).length);
         return _anim.get(_lastState)[_resIndex];
     }
 }

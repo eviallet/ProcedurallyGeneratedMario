@@ -2,7 +2,6 @@ package com.gueg.mario.entities;
 
 import android.content.res.Resources;
 
-import com.gueg.mario.R;
 import com.gueg.mario.components.Animations;
 import com.gueg.mario.components.GraphicsComponent;
 import com.gueg.mario.components.PhysicsComponent;
@@ -19,25 +18,14 @@ public class Enemy extends CollideableGameObject {
     private GraphicsComponent _graphics;
     private PhysicsComponent _physics;
     // required for cloning
+    HashMap<Integer, Integer[]> _sprites;
 
 
-    public Enemy(Resources res, int speed, boolean gravity) {
+    public Enemy(Resources res, int speed, boolean gravity, HashMap<Integer, Integer[]> sprites) {
         super(res, gravity);
         setVelocityX(-speed); // going left by default
 
-        HashMap<Integer, Integer[]> sprites = new HashMap<>();
-        sprites.put(
-                LEFT,
-                new Integer[]{
-                        R.drawable.goomba_2,
-                        R.drawable.goomba_3
-                });
-        sprites.put(
-                RIGHT,
-                new Integer[]{
-                        R.drawable.goomba_0,
-                        R.drawable.goomba_1
-                });
+        _sprites = sprites;
         _graphics = new GraphicsComponent(this, new Animations<>(sprites), ENEMY_FRAME_DURATION);
         _physics = new PhysicsComponent(this);
     }
@@ -58,7 +46,7 @@ public class Enemy extends CollideableGameObject {
 
     @Override
     public Enemy clone() {
-        return new Enemy(_res, getVelocityX(), isAffectedByGravity());
+        return new Enemy(_res, getVelocityX(), isAffectedByGravity(), _sprites);
     }
 
 

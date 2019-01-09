@@ -4,10 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 
 import com.gueg.mario.entities.AnimatedObject;
+import com.gueg.mario.entities.Enemy;
 import com.gueg.mario.entities.GameObject;
 import com.gueg.mario.entities.UnanimatedObject;
 
 import java.util.HashMap;
+
+import static com.gueg.mario.entities.GameObject.LEFT;
+import static com.gueg.mario.entities.GameObject.RIGHT;
 
 public class Spawners {
 
@@ -20,10 +24,12 @@ public class Spawners {
                 R.drawable.ground_0,
                 true);
         _spawners.put(Tiles.UP.getVal(), ground);
+
         UnanimatedObject block = new UnanimatedObject(res,
                 R.drawable.block_0,
                 true);
         _spawners.put(Tiles.BRICK.getVal(), block);
+
         AnimatedObject qblock = new AnimatedObject(res, new Integer[] {
                 R.drawable.qblock_0,
                 R.drawable.qblock_1,
@@ -32,19 +38,43 @@ public class Spawners {
                 false,
                 true);
         _spawners.put(Tiles.QUESTION.getVal(), qblock);
-        /*
+
+        HashMap<Integer, Integer[]> sprites = new HashMap<>();
+        sprites.put(
+                LEFT,
+                new Integer[]{
+                        R.drawable.goomba_2,
+                        R.drawable.goomba_3
+                });
+        sprites.put(
+                RIGHT,
+                new Integer[]{
+                        R.drawable.goomba_0,
+                        R.drawable.goomba_1
+                });
         Enemy goomba = new Enemy(res,
                 Enemy.DEFAULT_SPEED,
                 true,
-                MainActivity.objects);
-        _spawners.put(Tiles.GOOMBA.getVal(), goomba);*/
-        /*Enemy billball = new Enemy(res, new Integer[]{
-                R.drawable.billball_0,
-                R.drawable.billball_1},
+                sprites);
+        _spawners.put(Tiles.GOOMBA.getVal(), goomba);
+
+        sprites.clear();
+        sprites.put(
+                LEFT,
+                new Integer[]{
+                        R.drawable.billball_1
+                });
+        sprites.put(
+                RIGHT,
+                new Integer[]{
+                        R.drawable.billball_0,
+                });
+
+        Enemy billball = new Enemy(res,
                 Enemy.BILLBALL_SPEED,
                 false,
-                MainActivity.objects);
-        _spawners.put(Tiles.BILL_BALL.getVal(), billball);*/
+                sprites);
+        _spawners.put(Tiles.BILL_BALL.getVal(), billball);
     }
 
     public GameObject at(int i) {

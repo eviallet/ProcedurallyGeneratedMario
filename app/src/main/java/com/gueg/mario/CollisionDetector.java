@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import com.gueg.mario.entities.CollideableGameObject;
 import com.gueg.mario.entities.GameObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.gueg.mario.entities.GameObject.AT_BOTTOM;
@@ -16,12 +15,12 @@ import static com.gueg.mario.entities.GameObject.BASE_WIDTH;
 
 public class CollisionDetector {
 
-    private static final int MAX_SHIFT_X = BASE_WIDTH/4;
+    private static final int MAX_SHIFT_X = BASE_WIDTH/8;
 
-    private ArrayList<GameObject> _objects;
+    private SynchronizedArrayList<GameObject> _objects;
     private GameObject _obj;
 
-    public CollisionDetector(ArrayList<GameObject> objects) {
+    public CollisionDetector(SynchronizedArrayList<GameObject> objects) {
         _objects = objects;
     }
 
