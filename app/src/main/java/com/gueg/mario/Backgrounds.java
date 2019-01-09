@@ -3,6 +3,7 @@ package com.gueg.mario;
 import android.content.res.Resources;
 import android.graphics.Rect;
 
+import com.gueg.mario.entities.GameObjectFactory;
 import com.gueg.mario.entities.UnanimatedObject;
 
 public class Backgrounds {
@@ -33,14 +34,15 @@ public class Backgrounds {
         r3 = screenRect;
         r3.offset(-screenRect.width(),0);
 
-
-        background1 = new UnanimatedObject(res,R.drawable.bkg_0,false);
+        GameObjectFactory<UnanimatedObject> factory = new GameObjectFactory<>(UnanimatedObject.class, res);
+        factory.setSprite(R.drawable.bkg_0);
+        background1 = factory.build();
         background1.setSize(screenRect.width(), screenRect.height());
         background1.setPos(r1.left,r1.top);
-        background2 = new UnanimatedObject(res,R.drawable.bkg_0,false);
+        background2 = factory.build();
         background2.setSize(screenRect.width(), screenRect.height());
         background2.setPos(r2.left,r2.top);
-        background3 = new UnanimatedObject(res,R.drawable.bkg_0,false);
+        background3 = factory.build();
         background3.setSize(screenRect.width(), screenRect.height());
         background3.setPos(r3.left,r3.top);
     }

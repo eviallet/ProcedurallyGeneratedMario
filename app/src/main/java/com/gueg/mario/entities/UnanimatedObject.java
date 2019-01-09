@@ -1,15 +1,23 @@
 package com.gueg.mario.entities;
 
+
 import android.content.res.Resources;
 
 public class UnanimatedObject extends GameObject {
 
     private int _resId;
 
-    public UnanimatedObject(Resources res, int resId, boolean solid) {
-        super(res, false);
-        setSolid(solid);
+    private UnanimatedObject(Resources res, int resId, boolean isSolid) {
+        setRes(res);
+        _resId = resId;
+        setSolid(isSolid);
+    }
 
+    // used by GameObjectFactory
+    @SuppressWarnings("unused")
+    UnanimatedObject() {}
+
+    public void setSprite(int resId) {
         _resId = resId;
     }
 

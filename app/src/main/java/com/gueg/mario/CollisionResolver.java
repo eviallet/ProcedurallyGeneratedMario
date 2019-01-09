@@ -12,16 +12,16 @@ public class CollisionResolver {
 
     public static void clipToHorizontalObject(GameObject obj, GameObject other) {
         if(obj.getVelocityDirection() == LEFT)
-            obj.setPos(other.getPos().right, obj.getPos().top);
+            obj.setXPos(other.getPos().right);
         else
-            obj.setPos(other.getPos().left - obj.getSize()[X], obj.getPos().top);
+            obj.setXPos(other.getPos().left - obj.getSize()[X]);
     }
 
     public static void clipToVerticalObject(GameObject obj, GameObject other) {
         if(obj.getVelocityY() > 0)  // falling
-            obj.setPos(obj.getPos().left, other.getPos().top - obj.getSize()[Y]);
+            obj.setYPos(other.getPos().top - obj.getSize()[Y]);
         else                        // jumping
-            obj.setPos(obj.getPos().left, other.getPos().bottom);
+            obj.setYPos(other.getPos().bottom);
     }
 
     public interface CollisionResolverListener {

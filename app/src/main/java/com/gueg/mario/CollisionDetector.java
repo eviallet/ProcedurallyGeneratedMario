@@ -40,14 +40,16 @@ public class CollisionDetector {
     private HashMap<Integer,GameObject> getObjectsAround() {
         HashMap<Integer,GameObject> map = new HashMap<>();
         for(GameObject obj : _objects) {
-            if (isOnTopOf(obj))
-                map.put(AT_BOTTOM, obj);
-            else if (isAtLeftOf(obj))
-                map.put(AT_RIGHT, obj);
-            else if (isAtRightOf(obj))
-                map.put(AT_LEFT, obj);
-            else if (isBelow(obj))
-                map.put(AT_TOP, obj);
+            if(obj!=_obj) {
+                if (isOnTopOf(obj))
+                    map.put(AT_BOTTOM, obj);
+                else if (isAtLeftOf(obj))
+                    map.put(AT_RIGHT, obj);
+                else if (isAtRightOf(obj))
+                    map.put(AT_LEFT, obj);
+                else if (isBelow(obj))
+                    map.put(AT_TOP, obj);
+            }
         }
 
         return map;
@@ -83,7 +85,7 @@ public class CollisionDetector {
 
 
 
-    public interface Collideable {
+    public interface CollisionDetectorListener {
         void setObjectsAround(HashMap<Integer, GameObject> objectsAround);
         boolean hasCollisionOccured();
         void setCollisionOccured();

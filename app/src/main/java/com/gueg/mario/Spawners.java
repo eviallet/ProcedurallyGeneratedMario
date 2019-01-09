@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import com.gueg.mario.entities.AnimatedObject;
 import com.gueg.mario.entities.Enemy;
 import com.gueg.mario.entities.GameObject;
+import com.gueg.mario.entities.GameObjectFactory;
 import com.gueg.mario.entities.UnanimatedObject;
 
 import java.util.HashMap;
@@ -20,60 +21,66 @@ public class Spawners {
 
 
     public Spawners(Resources res) {
-        UnanimatedObject ground = new UnanimatedObject(res,
-                R.drawable.ground_0,
-                true);
+
+        // GROUND
+
+        GameObject ground = new GameObjectFactory<>(UnanimatedObject.class, res)
+                .setSprite(R.drawable.ground_0)
+                .setSolid(true)
+                .build();
         _spawners.put(Tiles.UP.getVal(), ground);
 
-        UnanimatedObject block = new UnanimatedObject(res,
-                R.drawable.block_0,
-                true);
+        // PROPS
+
+        // ...
+
+        // BLOCKS
+
+        GameObject block = new GameObjectFactory<>(UnanimatedObject.class, res)
+                .setSprite(R.drawable.block_0)
+                .setSolid(true)
+                .build();
         _spawners.put(Tiles.BRICK.getVal(), block);
 
-        AnimatedObject qblock = new AnimatedObject(res, new Integer[] {
-                R.drawable.qblock_0,
-                R.drawable.qblock_1,
-                R.drawable.qblock_2,
-                R.drawable.qblock_3},
-                false,
-                true);
+
+        GameObject qblock = new GameObjectFactory<>(AnimatedObject.class, res)
+                .setSolid(true)
+                .setSprites(new Integer[] {
+                        R.drawable.qblock_0,
+                        R.drawable.qblock_1,
+                        R.drawable.qblock_2,
+                        R.drawable.qblock_3})
+                .build();
         _spawners.put(Tiles.QUESTION.getVal(), qblock);
 
-        HashMap<Integer, Integer[]> sprites = new HashMap<>();
-        sprites.put(
-                LEFT,
-                new Integer[]{
+        // OBJECTS
+
+        // ...
+
+        // TERRAINS
+
+        // ...
+
+        // ENEMIES
+
+        GameObject goomba = new GameObjectFactory<>(Enemy.class, res)
+                .setSpeed(Enemy.DEFAULT_SPEED)
+                .setGravity(true)
+                .putSprites(LEFT, new Integer[] {
                         R.drawable.goomba_2,
-                        R.drawable.goomba_3
-                });
-        sprites.put(
-                RIGHT,
-                new Integer[]{
+                        R.drawable.goomba_3})
+                .putSprites(RIGHT, new Integer[] {
                         R.drawable.goomba_0,
-                        R.drawable.goomba_1
-                });
-        Enemy goomba = new Enemy(res,
-                Enemy.DEFAULT_SPEED,
-                true,
-                sprites);
+                        R.drawable.goomba_1})
+                .build();
         _spawners.put(Tiles.GOOMBA.getVal(), goomba);
 
-        sprites.clear();
-        sprites.put(
-                LEFT,
-                new Integer[]{
-                        R.drawable.billball_1
-                });
-        sprites.put(
-                RIGHT,
-                new Integer[]{
-                        R.drawable.billball_0,
-                });
 
-        Enemy billball = new Enemy(res,
-                Enemy.BILLBALL_SPEED,
-                false,
-                sprites);
+        GameObject billball = new GameObjectFactory<>(Enemy.class, res)
+                .setSpeed(Enemy.BILLBALL_SPEED)
+                .putSprites(LEFT, new Integer[] {R.drawable.billball_1})
+                .putSprites(RIGHT,new Integer[] {R.drawable.billball_0})
+                .build();
         _spawners.put(Tiles.BILL_BALL.getVal(), billball);
     }
 

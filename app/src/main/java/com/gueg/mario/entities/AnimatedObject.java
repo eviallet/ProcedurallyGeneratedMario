@@ -13,12 +13,22 @@ public class AnimatedObject extends GameObject {
     private Integer[] _resId;
     public static final int DEFAULT_STATE = 0;
 
-    public AnimatedObject(Resources res, Integer resId[], boolean gravity, boolean solid) {
-        super(res, gravity);
+    private AnimatedObject(Resources res, Integer resId[], boolean gravity, boolean solid) {
+        setRes(res);
         _resId = resId;
+        setGravity(gravity);
         setSolid(solid);
 
-        _graphics = new GraphicsComponent(this, new Animations<>(DEFAULT_STATE, resId), OBJECT_FRAME_DURATION);
+        _graphics = new GraphicsComponent(this, new Animations<>(DEFAULT_STATE, _resId), OBJECT_FRAME_DURATION);
+    }
+
+    // used by GameObjectFactory
+    @SuppressWarnings("unused")
+    AnimatedObject() {}
+
+    void setSprites(Integer[] sprites) {
+        _resId = sprites;
+        _graphics = new GraphicsComponent(this, new Animations<>(DEFAULT_STATE, sprites), OBJECT_FRAME_DURATION);
     }
 
 

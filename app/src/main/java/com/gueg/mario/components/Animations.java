@@ -1,7 +1,6 @@
 package com.gueg.mario.components;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import java.util.HashMap;
 
@@ -51,7 +50,7 @@ public class Animations<T> {
     }
 
     public int getCurrentResId() {
-        Log.d(":-:","anim array length : "+_anim.size()+" index is : "+_lastState+" ; length : "+_anim.get(_lastState).length);
+        //Log.d(":-:","anim array length : "+_anim.size()+" index is : "+_lastState+" ; length : "+_anim.get(_lastState).length);
         return _anim.get(_lastState)[_resIndex];
     }
 }

@@ -31,6 +31,7 @@ public class Mario extends CollideableGameObject {
     private static final int MARIO_FRAME_DURATION = 100;
 
     private State _state = State.IDLE_R;
+    private int _direction = RIGHT;
 
     private MarioBehavior _behavior;
     private GraphicsComponent _graphics;
@@ -38,10 +39,10 @@ public class Mario extends CollideableGameObject {
     private PhysicsComponent _physics;
     // Necessary for cloning
     private Rect _screenRect;
-    private int _direction = RIGHT;
 
     public Mario(Resources res, MarioBehavior.MarioEvents events, Rect screenRect) {
-        super(res, true);
+        setRes(res);
+        setGravity(true);
         _screenRect = screenRect;
         _behavior = new MarioBehavior(events, screenRect);
         _physics = new PhysicsComponent(this);

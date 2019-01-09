@@ -1,5 +1,6 @@
 package com.gueg.mario.entities;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 
 import com.gueg.mario.components.Animations;
@@ -18,16 +19,39 @@ public class Enemy extends CollideableGameObject {
     private GraphicsComponent _graphics;
     private PhysicsComponent _physics;
     // required for cloning
-    HashMap<Integer, Integer[]> _sprites;
+    private HashMap<Integer, Integer[]> _sprites;
 
 
-    public Enemy(Resources res, int speed, boolean gravity, HashMap<Integer, Integer[]> sprites) {
-        super(res, gravity);
-        setVelocityX(-speed); // going left by default
+    private Enemy(Resources res, int speed, boolean gravity, HashMap<Integer, Integer[]> sprites) {
+        setRes(res);
+        setVelocityX(speed);
+        setGravity(gravity);
 
         _sprites = sprites;
-        _graphics = new GraphicsComponent(this, new Animations<>(sprites), ENEMY_FRAME_DURATION);
+        _graphics = new GraphicsComponent(this, new Animations<>(_sprites), ENEMY_FRAME_DURATION);
         _physics = new PhysicsComponent(this);
+    }
+
+
+    // used by GameObjectFactory
+    @SuppressWarnings("unused")
+    Enemy() {
+        _physics = new PhysicsComponent(this);
+    }
+
+    @SuppressLint("UseSparseArrays")
+    public void putSprites(Integer state, Integer[] sprites) {
+        if(_sprites == null)
+            _sprites = new HashMap<>();
+        _sprites.put(state, sprites);
+    }
+
+    public void commitSprites() {
+        _graphics = new GraphicsComponent(this, new Animations<>(_sprites), ENEMY_FRAME_DURATION);
+    }
+
+    public void setSpeed(int speed) {
+        setVelocityX(-speed); // going left by default
     }
 
 
