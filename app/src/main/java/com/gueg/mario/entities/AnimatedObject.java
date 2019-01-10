@@ -7,7 +7,7 @@ import com.gueg.mario.components.GraphicsComponent;
 
 public class AnimatedObject extends GameObject {
 
-    private static final int OBJECT_FRAME_DURATION = 400;
+    private static final int OBJECT_FRAME_DURATION = 300;
     public static final int DEFAULT_STATE = 0;
 
     private GraphicsComponent _graphics;

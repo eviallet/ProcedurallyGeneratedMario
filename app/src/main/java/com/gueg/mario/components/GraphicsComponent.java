@@ -9,8 +9,7 @@ import static com.gueg.mario.entities.AnimatedObject.DEFAULT_STATE;
 
 public class GraphicsComponent extends Component {
 
-    private static long _ticker = System.currentTimeMillis();
-
+    private long _ticker = System.currentTimeMillis();
     private Animations _animations;
     private int _frameDuration;
 
