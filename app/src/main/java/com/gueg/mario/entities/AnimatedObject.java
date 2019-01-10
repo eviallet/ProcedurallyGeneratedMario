@@ -8,18 +8,15 @@ import com.gueg.mario.components.GraphicsComponent;
 public class AnimatedObject extends GameObject {
 
     private static final int OBJECT_FRAME_DURATION = 400;
-
-    private GraphicsComponent _graphics;
-    private Integer[] _resId;
     public static final int DEFAULT_STATE = 0;
 
-    private AnimatedObject(Resources res, Integer resId[], boolean gravity, boolean solid) {
+    private GraphicsComponent _graphics;
+
+    private AnimatedObject(Resources res, GraphicsComponent graphics, boolean gravity, boolean solid) {
         setRes(res);
-        _resId = resId;
+        _graphics = graphics;
         setGravity(gravity);
         setSolid(solid);
-
-        _graphics = new GraphicsComponent(this, new Animations<>(DEFAULT_STATE, _resId), OBJECT_FRAME_DURATION);
     }
 
     // used by GameObjectFactory
@@ -27,10 +24,8 @@ public class AnimatedObject extends GameObject {
     AnimatedObject() {}
 
     void setSprites(Integer[] sprites) {
-        _resId = sprites;
         _graphics = new GraphicsComponent(this, new Animations<>(DEFAULT_STATE, sprites), OBJECT_FRAME_DURATION);
     }
-
 
     @Override
     public void update() {
@@ -44,6 +39,6 @@ public class AnimatedObject extends GameObject {
 
     @Override
     public GameObject clone() {
-        return new AnimatedObject(_res, _resId, isAffectedByGravity(), isSolid());
+        return new AnimatedObject(_res, _graphics, isAffectedByGravity(), isSolid());
     }
 }

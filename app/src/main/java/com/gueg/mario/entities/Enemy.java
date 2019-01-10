@@ -22,14 +22,13 @@ public class Enemy extends CollideableGameObject {
     private HashMap<Integer, Integer[]> _sprites;
 
 
-    private Enemy(Resources res, int speed, boolean gravity, HashMap<Integer, Integer[]> sprites) {
+    private Enemy(Resources res, int speed, boolean gravity, GraphicsComponent graphics, PhysicsComponent physics) {
         setRes(res);
         setVelocityX(speed);
         setGravity(gravity);
 
-        _sprites = sprites;
-        _graphics = new GraphicsComponent(this, new Animations<>(_sprites), ENEMY_FRAME_DURATION);
-        _physics = new PhysicsComponent(this);
+        _graphics = graphics;
+        _physics = physics;
     }
 
 
@@ -70,7 +69,7 @@ public class Enemy extends CollideableGameObject {
 
     @Override
     public Enemy clone() {
-        return new Enemy(_res, getVelocityX(), isAffectedByGravity(), _sprites);
+        return new Enemy(_res, getVelocityX(), isAffectedByGravity(), _graphics, _physics);
     }
 
 

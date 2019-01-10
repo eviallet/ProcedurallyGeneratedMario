@@ -12,7 +12,6 @@ public class Animations<T> {
     private int _resIndex = 0;
 
     /**
-     *
      * @param resId multiple sprites ids
      */
     public Animations(T def, Integer resId[]) {
@@ -22,18 +21,7 @@ public class Animations<T> {
     }
 
     /**
-     *
      * @param wrapper : HashMap< Integer, Integer[] > with first Int being states and Int[] related resIds
-     *                 example call:
-     *                 HashMap<Integer, Integer[]> sprites = new HashMap<>();
-     *                 sprites.put(
-     *                   LEFT,
-     *                   new Integer[]{
-     *                   R.drawable.goomba_2,
-     *                   R.drawable.goomba_3
-     *                 });
-     *                 Animations _anim = new Animations(sprites, 100);
-     *
      */
     public Animations(HashMap<T, Integer[]> wrapper) {
         _anim = wrapper;
@@ -50,7 +38,6 @@ public class Animations<T> {
     }
 
     public int getCurrentResId() {
-        //Log.d(":-:","anim array length : "+_anim.size()+" index is : "+_lastState+" ; length : "+_anim.get(_lastState).length);
         return _anim.get(_lastState)[_resIndex];
     }
 }

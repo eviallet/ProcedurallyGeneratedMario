@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         visibleScreen.top = _mario.getPos().top - screenRect.height();
         visibleScreen.bottom = _mario.getPos().bottom + screenRect.height();
 
+        // ENABLE OR DISABLE OBJECTS WHETHER THEY ARE ON SCREEN
         for(int i = 1; i < _objects.size(); i++) {
             GameObject obj = _objects.get(i);
             if (!obj.isOnScreen(visibleScreen))
@@ -161,20 +162,19 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         }
 
 
-        for(int i = 1; i < _objects.size(); i++) {
-            GameObject obj = _objects.get(i);
-            obj.update();
-        }
+        // UPDATE OBJECTS
+        for(int i = 1; i < _objects.size(); i++)
+            _objects.get(i).update();
 
 
-        // CONSTANTS
+        // DISPLAY FPS
         sb.drawText(R.string.font, "FPS : "+ fps.logFrame(), 300, 40, 1f);
 
         // DRAW
-
         for(GameObject obj : _objects)
             sb.draw(obj);
 
+        // BACKGROUNDS
         sb.draw(_bkg.background1, _bkg.background1.getPos());
         sb.draw(_bkg.background2, _bkg.background2.getPos());
         sb.draw(_bkg.background3, _bkg.background3.getPos());
