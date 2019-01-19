@@ -87,11 +87,27 @@ public class MainActivity extends AppCompatActivity implements Drawer {
         // premier plan
         int[] resourcesIds = new int[] {
                 R.drawable.bkg_0,
-                R.drawable.ground_0,
+                // GROUND
+                R.drawable.overworld_ground_gnd,
+                R.drawable.overworld_ground_up,
+                R.drawable.overworld_ground_up_left,
+                R.drawable.overworld_ground_up_right,
+                // PLATFORMS
+                R.drawable.overworld_ground_above_up,
+                R.drawable.overworld_ground_above_up_left,
+                R.drawable.overworld_ground_above_up_right,
+                R.drawable.overworld_ground_above_left,
+                R.drawable.overworld_ground_above_right,
+                // ENEMIES
+                // - goomba
                 R.drawable.goomba_0,
                 R.drawable.goomba_1,
                 R.drawable.goomba_2,
                 R.drawable.goomba_3,
+                // - billball
+                R.drawable.billball_0,
+                R.drawable.billball_1,
+                // MARIO
                 R.drawable.walking_0,
                 R.drawable.walking_1,
                 R.drawable.walking_2,
@@ -104,13 +120,13 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 R.drawable.running_1,
                 R.drawable.running_2,
                 R.drawable.running_3,
+                // BLOCKS
                 R.drawable.block_0,
                 R.drawable.qblock_0,
                 R.drawable.qblock_1,
                 R.drawable.qblock_2,
                 R.drawable.qblock_3,
-                R.drawable.billball_0,
-                R.drawable.billball_1,
+                // FONTS
                 R.string.font
         };
 

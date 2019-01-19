@@ -41,13 +41,13 @@ public class CollisionDetector {
         HashMap<Integer,GameObject> map = new HashMap<>();
         for(GameObject obj : _objects) {
             if(obj!=_obj) {
-                if (isOnTopOf(obj))
+                if ((obj.getHitboxDir()==-1||obj.getHitboxDir()==AT_TOP)&&isOnTopOf(obj))
                     map.put(AT_BOTTOM, obj);
-                else if (isAtLeftOf(obj))
+                else if ((obj.getHitboxDir()==-1||obj.getHitboxDir()==AT_LEFT)&&isAtLeftOf(obj))
                     map.put(AT_RIGHT, obj);
-                else if (isAtRightOf(obj))
+                else if ((obj.getHitboxDir()==-1||obj.getHitboxDir()==AT_RIGHT)&&isAtRightOf(obj))
                     map.put(AT_LEFT, obj);
-                else if (isBelow(obj))
+                else if ((obj.getHitboxDir()==-1||obj.getHitboxDir()==AT_BOTTOM)&&isBelow(obj))
                     map.put(AT_TOP, obj);
             }
         }
@@ -56,31 +56,69 @@ public class CollisionDetector {
     }
 
     private boolean isOnTopOf(GameObject obj) {
-        return obj!=null && obj.isSolid() &&
-                _obj.getPos().bottom + _obj.getVelocityY() >= obj.getPos().top &&
-                _obj.getPos().bottom + _obj.getVelocityY() <= obj.getPos().bottom &&
-                _obj.getPos().centerX() > obj.getPos().left - MAX_SHIFT_X &&
-                _obj.getPos().centerX() < obj.getPos().right + MAX_SHIFT_X;
+        if(obj==null || !obj.isSolid())
+            return false;
+
+        switch (obj.getHitboxDir()) {
+            case AT_TOP:
+                return  _obj.getPos().bottom + _obj.getVelocityY() >= obj.getPos().top &&
+                        _obj.getPos().bottom + _obj.getVelocityY() <= obj.getPos().top + obj.getHitboxSpan() &&
+                        _obj.getPos().centerX() > obj.getPos().left - MAX_SHIFT_X &&
+                        _obj.getPos().centerX() < obj.getPos().right + MAX_SHIFT_X;
+            default:
+                return  _obj.getPos().bottom + _obj.getVelocityY() >= obj.getPos().top &&
+                        _obj.getPos().bottom + _obj.getVelocityY() <= obj.getPos().bottom &&
+                        _obj.getPos().centerX() > obj.getPos().left - MAX_SHIFT_X &&
+                        _obj.getPos().centerX() < obj.getPos().right + MAX_SHIFT_X;
+        }
     }
 
     private boolean isBelow(GameObject obj) {
-        return obj!=null && obj.isSolid() &&
-                _obj.getPos().top + _obj.getVelocityY() >= obj.getPos().top &&
-                _obj.getPos().top + _obj.getVelocityY() <= obj.getPos().bottom &&
-                _obj.getPos().centerX() > obj.getPos().left - MAX_SHIFT_X &&
-                _obj.getPos().centerX() < obj.getPos().right + MAX_SHIFT_X;
+        if(obj==null || !obj.isSolid())
+            return false;
+
+        switch (obj.getHitboxDir()) {
+            case AT_BOTTOM:
+                return  _obj.getPos().top + _obj.getVelocityY() >= obj.getPos().bottom - obj.getHitboxSpan() &&
+                        _obj.getPos().top + _obj.getVelocityY() <= obj.getPos().bottom &&
+                        _obj.getPos().centerX() > obj.getPos().left - MAX_SHIFT_X &&
+                        _obj.getPos().centerX() < obj.getPos().right + MAX_SHIFT_X;
+            default:
+                return  _obj.getPos().top + _obj.getVelocityY() >= obj.getPos().top &&
+                        _obj.getPos().top + _obj.getVelocityY() <= obj.getPos().bottom &&
+                        _obj.getPos().centerX() > obj.getPos().left - MAX_SHIFT_X &&
+                        _obj.getPos().centerX() < obj.getPos().right + MAX_SHIFT_X;
+        }
     }
 
     private boolean isAtLeftOf(GameObject obj) {
-        return obj!=null && obj.isSolid() &&
-                ((obj.getPos().bottom > _obj.getPos().bottom && obj.getPos().top < _obj.getPos().bottom)||(obj.getPos().bottom > _obj.getPos().top && obj.getPos().top < _obj.getPos().top)) &&
-                _obj.getPos().right + _obj.getVelocityX() >= obj.getPos().left && _obj.getPos().right + _obj.getVelocityX() <= obj.getPos().right;
+        if(obj==null || !obj.isSolid())
+            return false;
+
+        switch (obj.getHitboxDir()) {
+            case AT_LEFT:
+                return ((obj.getPos().bottom > _obj.getPos().bottom && obj.getPos().top < _obj.getPos().bottom)||(obj.getPos().bottom > _obj.getPos().top && obj.getPos().top < _obj.getPos().top)) &&
+                        _obj.getPos().right + _obj.getVelocityX() >= obj.getPos().left && _obj.getPos().right + _obj.getVelocityX() <= obj.getPos().left + obj.getHitboxSpan();
+            default:
+                return ((obj.getPos().bottom > _obj.getPos().bottom && obj.getPos().top < _obj.getPos().bottom)||(obj.getPos().bottom > _obj.getPos().top && obj.getPos().top < _obj.getPos().top)) &&
+                        _obj.getPos().right + _obj.getVelocityX() >= obj.getPos().left && _obj.getPos().right + _obj.getVelocityX() <= obj.getPos().right;
+
+        }
     }
 
     private boolean isAtRightOf(GameObject obj) {
-        return obj!=null && obj.isSolid() &&
-                ((obj.getPos().bottom > _obj.getPos().bottom && obj.getPos().top < _obj.getPos().bottom)||(obj.getPos().bottom > _obj.getPos().top && obj.getPos().top < _obj.getPos().top)) &&
-                _obj.getPos().left + _obj.getVelocityX() <= obj.getPos().right && _obj.getPos().left + _obj.getVelocityX() >= obj.getPos().left;
+        if(obj==null || !obj.isSolid())
+            return false;
+
+        switch (obj.getHitboxDir()) {
+            case AT_LEFT:
+                return  ((obj.getPos().bottom > _obj.getPos().bottom && obj.getPos().top < _obj.getPos().bottom)||(obj.getPos().bottom > _obj.getPos().top && obj.getPos().top < _obj.getPos().top)) &&
+                        _obj.getPos().left + _obj.getVelocityX() <= obj.getPos().right && _obj.getPos().left + _obj.getVelocityX() >= obj.getPos().right - obj.getHitboxSpan();
+            default:
+                return  ((obj.getPos().bottom > _obj.getPos().bottom && obj.getPos().top < _obj.getPos().bottom)||(obj.getPos().bottom > _obj.getPos().top && obj.getPos().top < _obj.getPos().top)) &&
+                        _obj.getPos().left + _obj.getVelocityX() <= obj.getPos().right && _obj.getPos().left + _obj.getVelocityX() >= obj.getPos().left;
+
+        }
     }
 
 

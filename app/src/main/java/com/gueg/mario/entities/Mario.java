@@ -98,14 +98,8 @@ public class Mario extends CollideableGameObject {
     }
 
     // GETTERS
-    public boolean isFalling() {
-        return getVelocityY() > 0;
-    }
     public boolean isOnGround() {
         return _physics.isOnGround();
-    }
-    public boolean isJumping() {
-        return getVelocityY() < 0;
     }
     public boolean isWalking() {
         return Math.abs(getVelocityX()) <= InputComponent.MAX_SPEED_X_WALKING;

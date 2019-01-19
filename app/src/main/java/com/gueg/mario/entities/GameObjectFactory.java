@@ -27,6 +27,7 @@ public class GameObjectFactory<T extends GameObject> {
         return this;
     }
 
+
     public GameObjectFactory setGravity(boolean gravity) {
         _obj.setGravity(gravity);
         return this;
@@ -36,6 +37,17 @@ public class GameObjectFactory<T extends GameObject> {
         _obj.setSolid(solid);
         return this;
     }
+
+    public GameObjectFactory setHitboxDir(int hitboxDir) {
+        _obj.setHitboxDir(hitboxDir);
+        return this;
+    }
+
+    public GameObjectFactory setHitboxSpan(int hitboxSpan) {
+        _obj.setHitboxSpan(hitboxSpan);
+        return this;
+    }
+
 
     public GameObjectFactory setSprite(int resId) {
         if (!(_obj instanceof UnanimatedObject)) throw new AssertionError();

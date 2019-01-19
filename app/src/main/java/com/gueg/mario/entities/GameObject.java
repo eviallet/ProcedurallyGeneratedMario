@@ -22,24 +22,23 @@ public abstract class GameObject implements Cloneable {
     public static final int AT_RIGHT = 2;
     public static final int AT_BOTTOM = 3;
 
+    public static final int HITBOX_SPAN_TOP = 20;
+    public static final int HITBOX_SPAN_BOTTOM = 30;
+
     protected Resources _res;
 
-    private Rect _pos;
+    private int[] _size = new int[] {BASE_WIDTH,BASE_HEIGHT};
+    private Rect _pos = new Rect(0, 0, _size[X], _size[Y]);
 
-    private int[] _size;
+    private boolean _solid = false;
+    private int _hitboxDir = -1;
+    private int _hitboxSpan = 0;
 
-    private boolean _solid;
-    private boolean _gravity;
-
+    private boolean _gravity = false;
     private int _velocityX = 0;
     private int _velocityY = 0;
 
-    GameObject() {
-        _solid = false;
-        _gravity = false;
-        _size = new int[] {BASE_WIDTH,BASE_HEIGHT};
-        _pos = new Rect(0, 0, _size[X], _size[Y]);
-    }
+    GameObject() {}
 
 
     public abstract void update();
@@ -69,6 +68,19 @@ public abstract class GameObject implements Cloneable {
     }
     public boolean isSolid() {
         return _solid;
+    }
+	
+	public void setHitboxDir(int hitboxDir) {
+		_hitboxDir = hitboxDir;
+	}
+	public int getHitboxDir() {
+		return _hitboxDir;
+	}
+	public void setHitboxSpan(int hitboxSpan) {
+        _hitboxSpan = hitboxSpan;
+    }
+    public int getHitboxSpan() {
+        return _hitboxSpan;
     }
 
     public void setSize(int x, int y) {
@@ -121,6 +133,12 @@ public abstract class GameObject implements Cloneable {
     }
     public int getVelocityY() {
         return _velocityY;
+    }
+    public boolean isFalling() {
+        return _velocityY > 0;
+    }
+    public boolean isJumping() {
+        return _velocityY < 0;
     }
 
     public void setVelocityX(int velocityX) {

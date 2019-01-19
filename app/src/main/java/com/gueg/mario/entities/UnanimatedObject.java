@@ -7,11 +7,13 @@ public class UnanimatedObject extends GameObject {
 
     private int _resId;
 
-    private UnanimatedObject(Resources res, int resId, int[] size, boolean isSolid) {
+    private UnanimatedObject(Resources res, int resId, int[] size, boolean isSolid, int hitboxDir, int hitboxSpan) {
         setRes(res);
         _resId = resId;
         setSizePx(size[X], size[Y]);
         setSolid(isSolid);
+        setHitboxDir(hitboxDir);
+        setHitboxSpan(hitboxSpan);
     }
 
     // used by GameObjectFactory
@@ -32,6 +34,6 @@ public class UnanimatedObject extends GameObject {
 
     @Override
     public UnanimatedObject clone() {
-        return new UnanimatedObject(_res, _resId, getSize(), isSolid());
+        return new UnanimatedObject(_res, _resId, getSize(), isSolid(), getHitboxDir(), getHitboxSpan());
     }
 }
