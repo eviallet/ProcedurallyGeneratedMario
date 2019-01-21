@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 if (t != Tiles.NONE.getVal()) {
                     GameObject spawner = _spawner.at(t);
                     if(spawner != null)
-                        _objects.add(spawner.spawnAtPos(GameObject.BASE_WIDTH * w, GameObject.BASE_HEIGHT * h));
+                        _objects.add(spawner.spawnAtGridPos(w, MAP_HEIGHT - h - 1, screenRect));
                 }
             }
         }

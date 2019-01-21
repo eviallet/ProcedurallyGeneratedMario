@@ -131,6 +131,12 @@ public abstract class GameObject implements Cloneable {
         return clone;
     }
 
+    public GameObject spawnAtGridPos(int x, int y, Rect screenRect) {
+        GameObject clone = clone();
+        clone.setGridPos(x, y, screenRect);
+        return clone;
+    }
+
 
     public void setOffset(int speed) {
         _pos.offset(speed,0);
