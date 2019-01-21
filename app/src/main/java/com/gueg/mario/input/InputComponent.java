@@ -15,6 +15,8 @@ public class InputComponent extends Component implements Input.InputListener {
     public static final int MAX_SPEED_X_RUNNING = 15;
 
     private Input _input = new Input();
+    // Prevent from jumping repeatedly while not releasing the screen
+    private boolean _jumpReleased = true;
 
     public InputComponent(Mario mario) {
         super(mario);
@@ -29,10 +31,13 @@ public class InputComponent extends Component implements Input.InputListener {
 
     @Override
     public void update() {
-        if(_input._jump && mario.getVelocityY() == 0 && mario.isOnGround()) {
+        if(_input._jump && mario.getVelocityY() == 0 && mario.isOnGround() && _jumpReleased) {
             mario.setVelocityY(JUMP);
+            _jumpReleased = false;
         } else if(!_input._jump && mario.getVelocityY() < JUMP / 2) {
             mario.setVelocityY(JUMP / 2);
+        } else if(!_input._jump && mario.isOnGround() && !_jumpReleased) {
+            _jumpReleased = true;
         }
 
         if(_input._walkLeft) {
