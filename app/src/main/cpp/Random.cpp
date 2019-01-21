@@ -1,6 +1,6 @@
 #include "Random.h"
 
-std::default_random_engine Random::generator;
+std::default_random_engine Random::generator((unsigned long)time(0));
 
 /*
 return true 1 time out of prob*100 with 0<=prob<=1.

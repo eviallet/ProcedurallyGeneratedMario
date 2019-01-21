@@ -2,6 +2,7 @@
 #define RANDOM_H
 
 #include <random>
+#include <time.h>
 
 class Random {
 public:
