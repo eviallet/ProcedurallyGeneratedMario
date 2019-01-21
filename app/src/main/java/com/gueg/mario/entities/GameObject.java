@@ -30,6 +30,8 @@ public abstract class GameObject implements Cloneable {
     private int[] _size = new int[] {BASE_WIDTH,BASE_HEIGHT};
     private Rect _pos = new Rect(0, 0, _size[X], _size[Y]);
 
+    private Rect _drawableRect;
+
     private boolean _solid = false;
     private int _hitboxDir = -1;
     private int _hitboxSpan = 0;
@@ -44,12 +46,18 @@ public abstract class GameObject implements Cloneable {
     public abstract void update();
 
     public abstract int getResId();
-    public Rect getDrawableRect(int resId) {
+
+    public Rect getDrawableRect() {
+        if(_drawableRect==null) throw new AssertionError();
+        return _drawableRect;
+    }
+
+    protected void setDrawableRect(int resId) {
         Drawable d = _res.getDrawable(resId);
         if(d!=null)
-            return new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight());
+            _drawableRect = new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight());
         else
-            return new Rect(0, 0, 0, 0);
+            _drawableRect = new Rect(0, 0, 0, 0);
     }
 
     public void setRes(Resources res) {

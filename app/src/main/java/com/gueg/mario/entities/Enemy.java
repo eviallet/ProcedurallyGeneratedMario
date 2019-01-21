@@ -18,16 +18,17 @@ public class Enemy extends CollideableGameObject {
 
     private GraphicsComponent _graphics;
     private PhysicsComponent _physics;
-    // required for cloning
+    // required for factorying
     private HashMap<Integer, Integer[]> _sprites;
 
 
-    private Enemy(Resources res, int speed, boolean gravity, GraphicsComponent graphics, PhysicsComponent physics) {
+    private Enemy(Resources res, int resId, int speed, boolean gravity, GraphicsComponent graphics, PhysicsComponent physics) {
         setRes(res);
         setVelocityX(speed);
         setGravity(gravity);
 
         _graphics = graphics;
+        setDrawableRect(resId);
         _physics = physics;
     }
 
@@ -39,17 +40,17 @@ public class Enemy extends CollideableGameObject {
     }
 
     @SuppressLint("UseSparseArrays")
-    public void putSprites(Integer state, Integer[] sprites) {
+    void putSprites(Integer state, Integer[] sprites) {
         if(_sprites == null)
             _sprites = new HashMap<>();
         _sprites.put(state, sprites);
     }
 
-    public void commitSprites() {
+    void commitSprites() {
         _graphics = new GraphicsComponent(this, new Animations<>(_sprites), ENEMY_FRAME_DURATION);
     }
 
-    public void setSpeed(int speed) {
+    void setSpeed(int speed) {
         setVelocityX(-speed); // going left by default
     }
 
@@ -69,7 +70,7 @@ public class Enemy extends CollideableGameObject {
 
     @Override
     public Enemy clone() {
-        return new Enemy(_res, getVelocityX(), isAffectedByGravity(), _graphics, _physics);
+        return new Enemy(_res, _sprites.get(0)[0], getVelocityX(), isAffectedByGravity(), _graphics, _physics);
     }
 
 

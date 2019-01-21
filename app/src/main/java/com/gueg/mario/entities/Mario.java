@@ -61,6 +61,8 @@ public class Mario extends CollideableGameObject {
         sprites.put(State.FALL_R, new Integer[]{R.drawable.falling_0});
         sprites.put(State.FALL_L, new Integer[]{R.drawable.falling_1});
         _graphics = new GraphicsComponent(this, new Animations<>(sprites), MARIO_FRAME_DURATION);
+
+        setDrawableRect(sprites.get(State.IDLE_L)[0]);
     }
 
     // PHYSICS

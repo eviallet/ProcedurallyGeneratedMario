@@ -11,13 +11,17 @@ public class AnimatedObject extends GameObject {
     public static final int DEFAULT_STATE = 0;
 
     private GraphicsComponent _graphics;
+    // Necessary for cloning (defining drawableRect with a resId)
+    private int _resId;
 
-    private AnimatedObject(Resources res, GraphicsComponent graphics, boolean gravity, boolean solid) {
+    private AnimatedObject(Resources res, int resId, GraphicsComponent graphics, boolean gravity, boolean solid) {
         setRes(res);
         _graphics = graphics;
         setGravity(gravity);
         setSolid(solid);
+        setDrawableRect(resId);
     }
+
 
     // used by GameObjectFactory
     @SuppressWarnings("unused")
@@ -25,6 +29,7 @@ public class AnimatedObject extends GameObject {
 
     void setSprites(Integer[] sprites) {
         _graphics = new GraphicsComponent(this, new Animations<>(DEFAULT_STATE, sprites), OBJECT_FRAME_DURATION);
+        _resId = sprites[0];
     }
 
     @Override
@@ -39,6 +44,6 @@ public class AnimatedObject extends GameObject {
 
     @Override
     public GameObject clone() {
-        return new AnimatedObject(_res, _graphics, isAffectedByGravity(), isSolid());
+        return new AnimatedObject(_res, _resId, _graphics, isAffectedByGravity(), isSolid());
     }
 }

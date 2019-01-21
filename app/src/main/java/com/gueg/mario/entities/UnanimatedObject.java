@@ -14,6 +14,7 @@ public class UnanimatedObject extends GameObject {
         setSolid(isSolid);
         setHitboxDir(hitboxDir);
         setHitboxSpan(hitboxSpan);
+        setDrawableRect(_resId);
     }
 
     // used by GameObjectFactory

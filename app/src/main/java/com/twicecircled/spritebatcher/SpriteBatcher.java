@@ -441,7 +441,7 @@ public class SpriteBatcher implements Renderer {
     public void draw(GameObject obj) {
         Texture texture = texturesByResourceId.get(obj.getResId());
         if (texture != null) {
-            texture.addSprite(obj.getDrawableRect(obj.getResId()), obj.getPos());
+            texture.addSprite(obj.getDrawableRect(), obj.getPos());
         } else
             Log.w("SpriteBatcher", "Warning: resourceId not found");
     }
@@ -449,7 +449,7 @@ public class SpriteBatcher implements Renderer {
 	public void draw(GameObject obj, Rect dst) {
 		Texture texture = texturesByResourceId.get(obj.getResId());
 		if (texture != null) {
-			texture.addSprite(obj.getDrawableRect(obj.getResId()), dst);
+			texture.addSprite(obj.getDrawableRect(), dst);
 		} else
 			Log.w("SpriteBatcher", "Warning: resourceId not found");
 	}
