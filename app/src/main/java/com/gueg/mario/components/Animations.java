@@ -14,8 +14,8 @@ public class Animations<T> {
     /**
      * @param resId multiple sprites ids
      */
-    public Animations(T def, Integer resId[]) {
-        _lastState = def;
+    public Animations(Integer resId[]) {
+        _lastState = (T)(Integer)0;
         _anim = new HashMap<>(1);
         _anim.put(_lastState, resId);
     }
@@ -24,10 +24,16 @@ public class Animations<T> {
      * @param wrapper : HashMap< Integer, Integer[] > with first Int being states and Int[] related resIds
      */
     public Animations(HashMap<T, Integer[]> wrapper) {
+        _lastState = (T)(Integer)0;
         _anim = wrapper;
     }
 
-    public void nextFrameForState(T state) {
+    void nextFrame() {
+        if(++_resIndex >= _anim.get(_lastState).length)
+        _resIndex = 0;
+    }
+
+    void nextFrameForState(T state) {
         if(state == _lastState) {
             if(++_resIndex >= _anim.get(state).length)
                 _resIndex = 0;
@@ -37,7 +43,7 @@ public class Animations<T> {
         }
     }
 
-    public int getCurrentResId() {
+    int getCurrentResId() {
         return _anim.get(_lastState)[_resIndex];
     }
 }

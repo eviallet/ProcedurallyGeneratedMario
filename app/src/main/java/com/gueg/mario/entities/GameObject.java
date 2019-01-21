@@ -26,6 +26,7 @@ public abstract class GameObject implements Cloneable {
     public static final int HITBOX_SPAN_BOTTOM = 30;
 
     protected Resources _res;
+    private int _resId;
 
     private int[] _size = new int[] {BASE_WIDTH,BASE_HEIGHT};
     private Rect _pos = new Rect(0, 0, _size[X], _size[Y]);
@@ -44,7 +45,6 @@ public abstract class GameObject implements Cloneable {
 
 
     public abstract void update();
-
     public abstract int getResId();
 
     public Rect getDrawableRect() {
@@ -53,6 +53,9 @@ public abstract class GameObject implements Cloneable {
     }
 
     protected void setDrawableRect(int resId) {
+        // necessary for equals
+        _resId = resId;
+
         Drawable d = _res.getDrawable(resId);
         if(d!=null)
             _drawableRect = new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight());
@@ -62,6 +65,16 @@ public abstract class GameObject implements Cloneable {
 
     public void setRes(Resources res) {
         _res = res;
+    }
+    public int getDefaultResId() {
+        return _resId;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(!(other instanceof GameObject))
+            return false;
+        return ((GameObject) other).getDefaultResId()==getDefaultResId() && ((GameObject) other).getPos().equals(getPos());
     }
 
     public void setGravity(boolean gravity) {
@@ -122,8 +135,7 @@ public abstract class GameObject implements Cloneable {
         return _pos;
     }
 
-    @Override
-    public abstract GameObject clone();
+    @Override public abstract GameObject clone();
 
     public GameObject spawnAtPos(int x, int y) {
         GameObject clone = clone();

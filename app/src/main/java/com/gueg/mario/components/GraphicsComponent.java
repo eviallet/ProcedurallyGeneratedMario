@@ -5,7 +5,6 @@ import com.gueg.mario.entities.Enemy;
 import com.gueg.mario.entities.GameObject;
 import com.gueg.mario.entities.Mario;
 
-import static com.gueg.mario.entities.AnimatedObject.DEFAULT_STATE;
 
 public class GraphicsComponent extends Component {
 
@@ -27,7 +26,7 @@ public class GraphicsComponent extends Component {
             if(_obj instanceof Enemy)
                 _animations.nextFrameForState(_obj.getVelocityDirection());
             if(_obj instanceof AnimatedObject)
-                _animations.nextFrameForState(DEFAULT_STATE);
+                _animations.nextFrame();
         }
     }
 

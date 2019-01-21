@@ -21,7 +21,7 @@ public class UnanimatedObject extends GameObject {
     @SuppressWarnings("unused")
     UnanimatedObject() {}
 
-    public void setSprite(int resId) {
+    void setSprite(int resId) {
         _resId = resId;
     }
 

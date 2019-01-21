@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements Drawer {
                 _bkg.offset(-_mario.getVelocityX()/6);
             }
         }, screenRect);
-        _mario.setGridPos(3, 2, screenRect);
+        _mario.setGridPos(2, 1, screenRect);
 
         _objects.add(_mario);
 

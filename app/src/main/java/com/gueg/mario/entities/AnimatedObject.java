@@ -8,7 +8,6 @@ import com.gueg.mario.components.GraphicsComponent;
 public class AnimatedObject extends GameObject {
 
     private static final int OBJECT_FRAME_DURATION = 300;
-    public static final int DEFAULT_STATE = 0;
 
     private GraphicsComponent _graphics;
     // Necessary for cloning (defining drawableRect with a resId)
@@ -28,7 +27,7 @@ public class AnimatedObject extends GameObject {
     AnimatedObject() {}
 
     void setSprites(Integer[] sprites) {
-        _graphics = new GraphicsComponent(this, new Animations<>(DEFAULT_STATE, sprites), OBJECT_FRAME_DURATION);
+        _graphics = new GraphicsComponent(this, new Animations<>(sprites), OBJECT_FRAME_DURATION);
         _resId = sprites[0];
     }
 
